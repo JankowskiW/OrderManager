@@ -14,10 +14,6 @@ import javax.validation.Valid;
 public class UserController {
     private final UserService userService;
 
-    @PostMapping("/login")
-    public void login(@RequestBody UserCredentialsDto credentials) {
-    }
-
     @PostMapping("/users")
     public UserResponseDto addUser(@RequestBody UserRequestDto userRequestDto) {
         return userService.addUser(userRequestDto);

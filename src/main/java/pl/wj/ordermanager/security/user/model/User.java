@@ -7,6 +7,9 @@ import pl.wj.ordermanager.security.role.model.Role;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,9 +28,8 @@ public class User {
     private LocalDateTime createdAt;
     private long updatedBy;
     private LocalDateTime updatedAt;
-    private long archivedBy;
+    private Long archivedBy;
     private LocalDateTime archivedAt;
-
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -36,4 +38,13 @@ public class User {
             inverseJoinColumns = {@JoinColumn(name="role_id")}
     )
     private List<Role> roles = new ArrayList<>();
+
+    @PrePersist
+    private void onCreate() {
+        createdAt = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+        updatedAt = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+    }
+
+    @PreUpdate
+    private void onUpdate() { updatedAt = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);}
 }

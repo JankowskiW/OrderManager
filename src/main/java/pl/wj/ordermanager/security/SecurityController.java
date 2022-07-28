@@ -1,12 +1,11 @@
 package pl.wj.ordermanager.security;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import pl.wj.ordermanager.security.role.model.Role;
 import pl.wj.ordermanager.security.user.UserService;
 import pl.wj.ordermanager.security.user.model.User;
+import pl.wj.ordermanager.security.user.model.dto.UserCredentialsDto;
 import pl.wj.ordermanager.util.JwtUtil;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,14 +16,16 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static pl.wj.ordermanager.util.JwtUtil.TOKEN_PREFIX;
 
 @RestController
-@RequestMapping("/security")
 @RequiredArgsConstructor
 public class SecurityController {
-
     private final UserService userService;
     private final JwtUtil jwtUtil;
 
-    @GetMapping("/refresh-token")
+    @PostMapping("/login")
+    public void login(@RequestBody UserCredentialsDto credentials) {
+    }
+
+    @GetMapping("/security/refresh-token")
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) {
         String refreshToken = request.getHeader(AUTHORIZATION);
         String username = jwtUtil.extractUsernameFromRefreshToken(refreshToken, true);

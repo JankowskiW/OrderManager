@@ -17,6 +17,6 @@ public class UserResponseDto {
     private LocalDateTime createdAt;
     private long updatedBy;
     private LocalDateTime updatedAt;
-    private long archivedBy;
+    private Long archivedBy;
     private LocalDateTime archivedAt;
 }
