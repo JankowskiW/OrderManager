@@ -1,6 +1,7 @@
 package pl.wj.ordermanager.security.user;
 
 import lombok.RequiredArgsConstructor;
+import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -9,6 +10,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import pl.wj.ordermanager.security.user.model.User;
 import pl.wj.ordermanager.security.user.model.dto.UserRequestDto;
+import pl.wj.ordermanager.security.user.model.dto.UserResponseDto;
+import pl.wj.ordermanager.security.user.model.dto.UserUpdateRequestDto;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +41,7 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found in the database"));
     }
 
-    public User addUser(UserRequestDto userRequestDto) {
+    public UserResponseDto addUser(UserRequestDto userRequestDto) {
         // TODO: 27.07.2022 : Create userMapper and method to map UserRequestDto to User
         User user = new User();
         user.setId(userRequestDto.getId());
@@ -49,6 +52,19 @@ public class UserService implements UserDetailsService {
         user.setUpdatedBy(userRequestDto.getUpdatedBy());
         user.setUpdatedAt(userRequestDto.getUpdatedAt());
 
-        return userRepository.save(user);
+
+        // TODO: 28.07.2022 : Create userMapper and mathod to map User to UserResponseDto
+        return UserResponseDto.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .createdBy(user.getCreatedBy())
+                .createdAt(user.getCreatedAt())
+                .updatedBy(user.getUpdatedBy())
+                .updatedAt(user.getUpdatedAt())
+                .build();
+    }
+
+    public UserResponseDto editUser(UserUpdateRequestDto userUpdateRequestDto) {
+        throw new NotYetImplementedException();
     }
 }

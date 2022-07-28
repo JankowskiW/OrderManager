@@ -19,11 +19,14 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String username;
+    private String emailAddress;
     private String password;
     private long createdBy;
     private LocalDateTime createdAt;
     private long updatedBy;
     private LocalDateTime updatedAt;
+    private long archivedBy;
+    private LocalDateTime archivedAt;
 
 
     @ManyToMany(fetch = FetchType.EAGER)
