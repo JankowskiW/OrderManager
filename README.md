@@ -20,6 +20,7 @@ Project contains:
 * MS SQL Server Driver
 * Swagger2 version: 2.9.2
 * Lombok Project
+* MapStruct
 * Mockito
 * JUnit5
 * AssertJ
