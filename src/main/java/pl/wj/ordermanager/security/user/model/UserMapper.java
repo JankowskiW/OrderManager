@@ -7,5 +7,7 @@ import pl.wj.ordermanager.security.user.model.dto.UserResponseDto;
 @Mapper
 public interface UserMapper {
     User userRequestDtoToUser(UserRequestDto userRequestDto);
+    User userResponseDtoToUser(UserResponseDto userResponseDto);
     UserResponseDto userToUserResponseDto(User user);
+
 }

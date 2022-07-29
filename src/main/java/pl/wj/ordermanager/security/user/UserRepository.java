@@ -30,13 +30,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> getByUsername(String username);
 
     @Query("SELECT new pl.wj.ordermanager.security.user.model.dto.UserResponseDto(" +
-            "u.id, u.username, u.emailAddress, u.createdBy, u.createdAt, " +
+            "u.id, u.firstName, u.lastName, u.username, u.emailAddress, u.createdBy, u.createdAt, " +
             "u.updatedBy, u.updatedAt, u.archivedBy, u.archivedAt) FROM User u")
     Page<UserResponseDto> getUsers(Pageable pageable);
 
 
     @Query("SELECT new pl.wj.ordermanager.security.user.model.dto.UserResponseDto(" +
-            "u.id, u.username, u.emailAddress, u.createdBy, u.createdAt, " +
+            "u.id, u.firstName, u.lastName, u.username, u.emailAddress, u.createdBy, u.createdAt, " +
             "u.updatedBy, u.updatedAt, u.archivedBy, u.archivedAt) FROM User u " +
             "WHERE (:archived = true AND u.archivedBy IS NOT NULL) OR (:archived = false AND u.archivedBy IS NULL)")
     Page<UserResponseDto> getUsers(Boolean archived, Pageable pageable);

@@ -13,7 +13,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/users")
+@RequestMapping("api/users")
 public class UserController {
     private final UserService userService;
 
@@ -24,14 +24,8 @@ public class UserController {
         return userService.getUsers(archived, pageable);
     }
 
-    @PostMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public UserResponseDto addUser(@RequestBody UserRequestDto userRequestDto) {
-        return userService.addUser(userRequestDto);
-    }
-
     @PatchMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public UserResponseDto editUser(
             @PathVariable long id, @Valid @RequestBody UserUpdateRequestDto userUpdateRequestDto) {
             return userService.editUser(userUpdateRequestDto);
