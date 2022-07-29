@@ -3,6 +3,8 @@ package pl.wj.ordermanager.security.user;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.cfg.NotYetImplementedException;
 import org.mapstruct.factory.Mappers;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -61,5 +63,8 @@ public class UserService implements UserDetailsService {
         throw new NotYetImplementedException();
     }
 
-
+    public Page<UserResponseDto> getUsers(Boolean archived, Pageable pageable) {
+        if (archived == null) return userRepository.getUsers(pageable);
+        return userRepository.getUsers(archived, pageable);
+    }
 }
