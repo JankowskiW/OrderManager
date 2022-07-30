@@ -36,6 +36,7 @@ public class RegistrationService {
         this.confirmationTokenExpirationTime = confirmationTokenExpirationTime;
     }
 
+    @Transactional
     public UserResponseDto registerUser(UserRequestDto userRequestDto) {
         User user = userService.addUser(userRequestDto);
 
