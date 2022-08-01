@@ -29,6 +29,7 @@ dependencies {
     implementation 'org.projectlombok:lombok:1.18.24'
     implementation 'org.mapstruct:mapstruct:1.5.1.Final'
     implementation 'org.springframework.boot:spring-boot-starter-mail:2.7.0'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
     compileOnly 'org.projectlombok:lombok'
 

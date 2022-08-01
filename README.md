@@ -21,6 +21,7 @@ Project contains:
 * Swagger2 version: 2.9.2
 * Lombok Project
 * MapStruct
+* Thymeleaf
 * Mockito
 * JUnit5
 * AssertJ
