@@ -24,21 +24,29 @@ public class RegistrationService {
     private final EmailSender emailSender;
     private final long confirmationTokenExpirationTime;
     private final UserMapper userMapper = Mappers.getMapper(UserMapper.class);
+    private final String senderEmailAddress;
 
     public RegistrationService(ConfirmationTokenService confirmationTokenService,
                                UserService userService,
                                EmailSender emailSender,
-                               @Value("${confirmation-token.expiration-time}") long confirmationTokenExpirationTime) {
+                               @Value("${confirmation-token.expiration-time}") long confirmationTokenExpirationTime,
+                               @Value("${spring.mail.username}") String senderEmailAddress) {
         this.confirmationTokenService = confirmationTokenService;
         this.userService = userService;
         this.emailSender = emailSender;
         this.confirmationTokenExpirationTime = confirmationTokenExpirationTime;
+        this.senderEmailAddress = senderEmailAddress;
     }
 
     @Transactional
     public UserResponseDto registerUser(UserRequestDto userRequestDto) {
         User user = userService.addUser(userRequestDto);
+        String confirmationToken = createNewConfirmationToken(user);
+        sendVerificationEmailMessage(user, confirmationToken);
+        return userMapper.userToUserResponseDto(user);
+    }
 
+    private String createNewConfirmationToken(User user) {
         ConfirmationToken confirmationToken = new ConfirmationToken(
                 UUID.randomUUID().toString(),
                 LocalDateTime.now(),
@@ -46,27 +54,33 @@ public class RegistrationService {
                 user
         );
         confirmationTokenService.addConfirmationToken(confirmationToken);
+        return confirmationToken.getToken();
+    }
 
-
-        String from = "developmentwj@gmail.com";
+    private void sendVerificationEmailMessage(User user, String confirmationToken) {
         String subject = "Company - Email confirmation";
-        String confirmationLink = "http://localhost:8080/api/registration/confirm?token=" + confirmationToken.getToken();
-        emailSender.send(from, user.getEmailAddress(), subject, user.getUsername(), confirmationLink, confirmationTokenExpirationTime);
-        return userMapper.userToUserResponseDto(user);
-
+        String confirmationLink = "http://localhost:8080/api/registration/confirm?token=" + confirmationToken;
+        emailSender.send(senderEmailAddress, user.getEmailAddress(), subject,
+                user.getUsername(), confirmationLink, confirmationTokenExpirationTime);
     }
 
     @Transactional
     public String confirmEmail(String token) {
         ConfirmationToken confirmationToken = confirmationTokenService.getConfirmationToken(token)
                 .orElseThrow(() -> new RuntimeException("Token not found"));
+        validateConfirmationToken(confirmationToken);
+        confirmEmailAddress(confirmationToken);
+        return "Email address confirmed";
+    }
 
+    private void validateConfirmationToken(ConfirmationToken confirmationToken) throws RuntimeException {
         if (confirmationToken.getConfirmedAt() != null) throw new RuntimeException("Email already confirmed");
         if (confirmationToken.getExpiresAt().isBefore(LocalDateTime.now())) throw new RuntimeException("Token expired");
+    }
 
+    private void confirmEmailAddress(ConfirmationToken confirmationToken) {
         confirmationToken.setConfirmedAt(LocalDateTime.now());
         confirmationTokenService.updateConfirmationToken(confirmationToken);
         userService.enableUser(confirmationToken.getUser());
-        return "Email address confirmed";
     }
 }
