@@ -23,6 +23,7 @@ import pl.wj.ordermanager.security.JsonObjectAuthenticationFilter;
 import pl.wj.ordermanager.security.JwtAuthorizationFilter;
 import pl.wj.ordermanager.security.RestAuthenticationFailureHandler;
 import pl.wj.ordermanager.security.RestAuthenticationSuccessHandler;
+import pl.wj.ordermanager.util.JwtUtil;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
@@ -36,6 +37,7 @@ public class SecurityConfig {
     private final ObjectMapper objectMapper;
     private final RestAuthenticationSuccessHandler successHandler;
     private final RestAuthenticationFailureHandler failureHandler;
+    private final JwtUtil jwtUtil;
     private final String secret;
 
     public SecurityConfig(
@@ -44,12 +46,14 @@ public class SecurityConfig {
             PasswordEncoder bCryptPasswordEncoder,
             RestAuthenticationSuccessHandler successHandler,
             RestAuthenticationFailureHandler failureHandler,
+            JwtUtil jwtUtil,
             @Value("${jwt.secret}") String secret) {
         this.userDetailsService = userDetailsService;
         this.bCryptPasswordEncoder = (BCryptPasswordEncoder) bCryptPasswordEncoder;
         this.objectMapper = objectMapper;
         this.successHandler = successHandler;
         this.failureHandler = failureHandler;
+        this.jwtUtil = jwtUtil;
         this.secret = secret;
     }
 
@@ -63,7 +67,7 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(STATELESS)
                 .and()
                 .addFilter(authenticationFilter(authenticationManager))
-                .addFilter(new JwtAuthorizationFilter(authenticationManager, userDetailsService, secret))
+                .addFilter(new JwtAuthorizationFilter(authenticationManager, userDetailsService, jwtUtil, secret))
                 .exceptionHandling()
                 .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
                 .and()

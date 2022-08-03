@@ -31,7 +31,11 @@ public class RestAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuc
                 authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()),
                 request.getRequestURL().toString());
         String refreshToken = jwtUtil.generateRefreshToken(user.getUsername(), request.getRequestURL().toString());
-        response.setHeader("access_token", TOKEN_PREFIX + accessToken);
-        response.setHeader("refresh_token", TOKEN_PREFIX + refreshToken);
+        setResponseHeaders(response, TOKEN_PREFIX + accessToken, TOKEN_PREFIX + refreshToken);
+    }
+
+    private void setResponseHeaders(HttpServletResponse response, String accessToken, String refreshToken) {
+        response.setHeader("access_token", accessToken);
+        response.setHeader("refresh_token", refreshToken);
     }
 }
