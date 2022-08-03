@@ -2,10 +2,10 @@ package pl.wj.ordermanager.security;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import pl.wj.ordermanager.security.role.model.Role;
-import pl.wj.ordermanager.security.user.UserService;
-import pl.wj.ordermanager.security.user.model.User;
-import pl.wj.ordermanager.security.user.model.dto.UserCredentialsDto;
+import pl.wj.ordermanager.role.model.Role;
+import pl.wj.ordermanager.user.UserService;
+import pl.wj.ordermanager.user.model.User;
+import pl.wj.ordermanager.user.model.dto.UserCredentialsDto;
 import pl.wj.ordermanager.util.JwtUtil;
 
 import javax.servlet.http.HttpServletRequest;
