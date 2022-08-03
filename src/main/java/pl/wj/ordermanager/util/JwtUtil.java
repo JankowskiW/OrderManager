@@ -28,44 +28,61 @@ public class JwtUtil {
     }
 
     public String generateAccessToken(String username, List<String> authorities, String issuer) {
-        if (username == null || username.isBlank()) {
-            throw new RuntimeException("Username is not valid.");
-        }
+        validateAuthorities(authorities);
+        validateUsername(username);
+        JWTCreator.Builder jwtBuilder = createJwtBuilder(username, "roles", authorities);
+        setIssuerToJwtBuilder(jwtBuilder, issuer);
+        return jwtBuilder.sign(ALGORITHM);
+    }
+
+    private void validateAuthorities(List<String> authorities) throws RuntimeException {
         if (authorities == null) {
             throw new RuntimeException("Cannot pass null as authorities list.");
         }
-        JWTCreator.Builder jwtBuilder = JWT.create()
-                .withSubject(username)
-                .withExpiresAt(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXP_TIME))
-                .withClaim("roles", authorities);
+    }
 
-        if (issuer != null) {
-            jwtBuilder = jwtBuilder.withIssuer(issuer);
-        }
-        return jwtBuilder.sign(ALGORITHM);
+    private JWTCreator.Builder createJwtBuilder(String username, String claimName, List<String> authorities) {
+        return createJwtBuilder(username).withClaim(claimName, authorities);
     }
 
     public String generateRefreshToken(String username, String issuer) {
-        if (username == null || username.isBlank()) {
-            throw new RuntimeException("Username is not valid.");
-        }
-        JWTCreator.Builder jwtBuilder = JWT.create()
-                .withSubject(username)
-                .withExpiresAt(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXP_TIME));
-
-        if (issuer != null) {
-            jwtBuilder = jwtBuilder.withIssuer(issuer);
-        }
+        validateUsername(username);
+        JWTCreator.Builder jwtBuilder = createJwtBuilder(username);
+        setIssuerToJwtBuilder(jwtBuilder, issuer);
         return jwtBuilder.sign(ALGORITHM);
     }
 
+    private void validateUsername(String username) throws RuntimeException {
+        if (username == null || username.isBlank()) {
+            throw new RuntimeException("Username is not valid.");
+        }
+    }
+
+    private JWTCreator.Builder createJwtBuilder(String username) {
+        return JWT.create()
+                .withSubject(username)
+                .withExpiresAt(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXP_TIME));
+    }
+
+    private void setIssuerToJwtBuilder(JWTCreator.Builder jwtBuilder, String issuer) {
+        if (issuer != null) jwtBuilder.withIssuer(issuer);
+    }
+
     public String extractUsernameFromRefreshToken(String refreshToken, boolean isBearer) {
+        validateRefreshToken(refreshToken, isBearer);
+        return getSubjectFromRefreshToken(refreshToken);
+    }
+
+    private void validateRefreshToken(String refreshToken, boolean isBearer) throws RuntimeException {
         if (refreshToken == null) {
             throw new RuntimeException("Refresh token is missing");
         }
         if (isBearer && !refreshToken.startsWith(TOKEN_PREFIX)) {
             throw new RuntimeException("Refresh token has invalid prefix");
         }
+    }
+
+    private String getSubjectFromRefreshToken(String refreshToken) {
         return JWT.require(ALGORITHM)
                 .build()
                 .verify(refreshToken.replace(TOKEN_PREFIX, ""))
