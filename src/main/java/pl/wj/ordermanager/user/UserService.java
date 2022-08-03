@@ -27,8 +27,7 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.getByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found in the database"));
+        return getUserByUsername(username);
     }
 
     public User getUserByUsername(String username) {
@@ -38,13 +37,25 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public User addUser(UserRequestDto userRequestDto) {
-        long loggedUserId = userRepository.getLoggedUserId()
+        long loggedInUserId = getLoggedInUserId();
+        encodeUserPassword(userRequestDto);
+        User user = mapUserRequestDtoWithAuditFieldsToUser(userRequestDto, loggedInUserId);
+        return userRepository.save(user);
+    }
+
+    private long getLoggedInUserId() throws UsernameNotFoundException {
+        return userRepository.getLoggedInUserId()
                 .orElseThrow(() -> new UsernameNotFoundException("User not found in the database"));
+    }
+
+    private void encodeUserPassword(UserRequestDto userRequestDto) {
         userRequestDto.setPassword(passwordEncoder.encode(userRequestDto.getPassword()));
+    }
+
+    private User mapUserRequestDtoWithAuditFieldsToUser(UserRequestDto userRequestDto, long loggedInUserId) {
         User user = userMapper.userRequestDtoToUser(userRequestDto);
-        user.setCreatedBy(loggedUserId);
-        user.setUpdatedBy(loggedUserId);
-        user = userRepository.save(user);
+        user.setCreatedBy(loggedInUserId);
+        user.setUpdatedBy(loggedInUserId);
         return user;
     }
 

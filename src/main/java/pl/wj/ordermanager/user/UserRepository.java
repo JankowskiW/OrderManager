@@ -16,7 +16,7 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    default Optional<Long> getLoggedUserId() {
+    default Optional<Long> getLoggedInUserId() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (!(auth instanceof AnonymousAuthenticationToken)) {
             return getIdByUsername(auth.getName());
