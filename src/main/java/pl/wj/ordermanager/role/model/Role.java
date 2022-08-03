@@ -1,5 +1,6 @@
 package pl.wj.ordermanager.role.model;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import pl.wj.ordermanager.privilege.model.Privilege;
@@ -9,9 +10,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
 @Getter
 @Setter
+@EqualsAndHashCode
+@Entity
 @Table(name="roles")
 public class Role {
     @Id

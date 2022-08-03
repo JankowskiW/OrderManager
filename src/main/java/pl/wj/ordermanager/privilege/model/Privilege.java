@@ -1,5 +1,6 @@
 package pl.wj.ordermanager.privilege.model;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,9 +8,10 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Entity
 @Getter
 @Setter
+@EqualsAndHashCode
+@Entity
 @Table(name="privileges")
 public class Privilege {
     @Id

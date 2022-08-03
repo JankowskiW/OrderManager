@@ -1,5 +1,6 @@
 package pl.wj.ordermanager.confirmationtoken.model;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,9 +11,10 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@EqualsAndHashCode
 @Entity
 @Table(name="confirmation_tokens")
-@NoArgsConstructor
 public class ConfirmationToken {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
