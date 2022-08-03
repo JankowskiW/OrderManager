@@ -22,22 +22,29 @@ public class EmailService implements EmailSender {
     @Async
     public void send(String from, String to, String subject, String username, String confirmationLink, long tokenExpirationTime) {
         try {
-            Context context = new Context();
-            context.setVariable("username", username);
-            context.setVariable("confirmationlink", confirmationLink);
-            context.setVariable("exptime", tokenExpirationTime);
-            String content = templateEngine.process("confirmemailtemplate", context);
-
-
-            MimeMessage mimeMessage = mailSender.createMimeMessage();
-            MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, "UTF-8");
-            messageHelper.setText(content, true);
-            messageHelper.setTo(to);
-            messageHelper.setSubject(subject);
-            messageHelper.setFrom(from);
+            String content = prepareEmailContent(username, confirmationLink, tokenExpirationTime);
+            MimeMessage mimeMessage = prepareMimeMessage(content, to, subject, from);
             mailSender.send(mimeMessage);
         } catch (MessagingException e) {
             throw new IllegalStateException("Failed to send email");
         }
+    }
+
+    private String prepareEmailContent(String username, String confirmationLink, long tokenExpirationTime) {
+        Context context = new Context();
+        context.setVariable("username", username);
+        context.setVariable("confirmationlink", confirmationLink);
+        context.setVariable("exptime", tokenExpirationTime);
+        return templateEngine.process("confirmemailtemplate", context);
+    }
+
+    private MimeMessage prepareMimeMessage(String content, String to, String subject, String from) throws MessagingException {
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, "UTF-8");
+        messageHelper.setText(content, true);
+        messageHelper.setTo(to);
+        messageHelper.setSubject(subject);
+        messageHelper.setFrom(from);
+        return mimeMessage;
     }
 }
