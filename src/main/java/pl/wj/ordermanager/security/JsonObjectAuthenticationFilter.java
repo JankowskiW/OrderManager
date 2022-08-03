@@ -21,21 +21,26 @@ public class JsonObjectAuthenticationFilter extends UsernamePasswordAuthenticati
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         try {
-            BufferedReader reader = request.getReader();
-            StringBuilder stringBuilder = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                stringBuilder.append(line);
-            }
-            UserCredentialsDto userCredentialsDto = objectMapper.readValue(stringBuilder.toString(), UserCredentialsDto.class);
-            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-                    userCredentialsDto.getUsername(), userCredentialsDto.getPassword()
-            );
-            setDetails(request, token);
-            Authentication authentication = this.getAuthenticationManager().authenticate(token);
-            return authentication;
+            return authenticaticateUser(request);
         } catch (IOException e) {
             throw new IllegalArgumentException(e.getMessage());
         }
+    }
+
+    private Authentication authenticaticateUser(HttpServletRequest request) throws IOException {
+        UserCredentialsDto userCredentialsDto = extractCredentialsFromRequest(request.getReader());
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+                userCredentialsDto.getUsername(), userCredentialsDto.getPassword());
+        setDetails(request, token);
+        return this.getAuthenticationManager().authenticate(token);
+    }
+
+    private UserCredentialsDto extractCredentialsFromRequest(BufferedReader bufferedReader) throws IOException {
+        StringBuilder stringBuilder = new StringBuilder();
+        String line;
+        while ((line = bufferedReader.readLine()) != null) {
+            stringBuilder.append(line);
+        }
+        return objectMapper.readValue(stringBuilder.toString(), UserCredentialsDto.class);
     }
 }
