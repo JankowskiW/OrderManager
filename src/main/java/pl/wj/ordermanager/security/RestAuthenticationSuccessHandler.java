@@ -6,7 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 //import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-import pl.wj.ordermanager.security.user.model.User;
+import pl.wj.ordermanager.user.model.User;
 import pl.wj.ordermanager.util.JwtUtil;
 
 import javax.servlet.http.HttpServletRequest;
