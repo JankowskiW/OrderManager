@@ -1,8 +1,6 @@
 package pl.wj.ordermanager.user.model;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -44,7 +42,7 @@ public class User implements UserDetails {
             joinColumns = {@JoinColumn(name="user_id")},
             inverseJoinColumns = {@JoinColumn(name="role_id")}
     )
-    private List<Role> roles = new ArrayList<>();
+    private List<Role> roles;
 
     @PrePersist
     private void onCreate() {

@@ -38,8 +38,8 @@ public class UserService implements UserDetailsService {
     @Transactional
     public User addUser(UserRequestDto userRequestDto) {
         long loggedInUserId = getLoggedInUserId();
-        encodeUserPassword(userRequestDto);
         User user = mapUserRequestDtoWithAuditFieldsToUser(userRequestDto, loggedInUserId);
+        encodeUserPassword(user);
         return userRepository.save(user);
     }
 
@@ -48,8 +48,8 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found in the database"));
     }
 
-    private void encodeUserPassword(UserRequestDto userRequestDto) {
-        userRequestDto.setPassword(passwordEncoder.encode(userRequestDto.getPassword()));
+    private void encodeUserPassword(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
     }
 
     private User mapUserRequestDtoWithAuditFieldsToUser(UserRequestDto userRequestDto, long loggedInUserId) {

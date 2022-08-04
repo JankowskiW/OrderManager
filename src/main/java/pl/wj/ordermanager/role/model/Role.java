@@ -1,8 +1,6 @@
 package pl.wj.ordermanager.role.model;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import pl.wj.ordermanager.privilege.model.Privilege;
 
 import javax.persistence.*;
@@ -32,5 +30,5 @@ public class Role {
             joinColumns = {@JoinColumn(name="role_id")},
             inverseJoinColumns = {@JoinColumn(name="privilege_id")}
     )
-    private List<Privilege> privileges = new ArrayList<>();
+    private List<Privilege> privileges;
 }
