@@ -1,6 +1,7 @@
 package pl.wj.ordermanager.user.model.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,6 +9,7 @@ import javax.validation.constraints.Pattern;
 
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 public class UserRequestDto {
     private String username;

@@ -8,7 +8,7 @@ import pl.wj.ordermanager.user.model.dto.UserResponseDto;
 @Mapper(componentModel = "spring")
 public interface UserMapper {
     User userRequestDtoToUser(UserRequestDto userRequestDto);
-    User userResponseDtoToUser(UserResponseDto userResponseDto);
     UserResponseDto userToUserResponseDto(User user);
     UserRequestDto userToUserRequestDto(User user);
+    UserResponseDto userRequestDtoToUserResponseDto(UserRequestDto userRequestDto);
 }

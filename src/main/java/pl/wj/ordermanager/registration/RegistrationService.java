@@ -1,6 +1,7 @@
 package pl.wj.ordermanager.registration;
 
-import org.mapstruct.factory.Mappers;
+import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,18 +23,20 @@ public class RegistrationService {
     private final ConfirmationTokenService confirmationTokenService;
     private final UserService userService;
     private final EmailSender emailSender;
+    private final UserMapper userMapper;
     private final long confirmationTokenExpirationTime;
-    private final UserMapper userMapper = Mappers.getMapper(UserMapper.class);
     private final String senderEmailAddress;
 
     public RegistrationService(ConfirmationTokenService confirmationTokenService,
                                UserService userService,
                                EmailSender emailSender,
-                               @Value("${confirmation-token.expiration-time}") long confirmationTokenExpirationTime,
+                               UserMapper userMapper,
+                               @Value("${confirmation-token.expiration-time}") Long confirmationTokenExpirationTime,
                                @Value("${spring.mail.username}") String senderEmailAddress) {
         this.confirmationTokenService = confirmationTokenService;
         this.userService = userService;
         this.emailSender = emailSender;
+        this.userMapper = userMapper;
         this.confirmationTokenExpirationTime = confirmationTokenExpirationTime;
         this.senderEmailAddress = senderEmailAddress;
     }
