@@ -20,6 +20,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static pl.wj.ordermanager.registration.RegistrationServiceTestHelper.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -72,5 +74,9 @@ class RegistrationServiceTest {
                 .isNotNull()
                 .usingRecursiveComparison()
                 .isEqualTo(expectedResponse);
+        verify(emailSender).send(
+                eq(SENDER_EMAIL_ADDRESS), eq(user.getEmailAddress()), eq(getSubject()),
+                eq(user.getUsername()), startsWith(getConfirmationLink()), eq(TOKEN_EXPIRATION_TIME));
     }
+
 }

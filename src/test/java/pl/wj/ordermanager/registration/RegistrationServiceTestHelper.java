@@ -12,10 +12,14 @@ public class RegistrationServiceTestHelper {
 
     private static LocalDateTime currentTimestamp = LocalDateTime.now();
     private static UserMapper userMapper = Mappers.getMapper(UserMapper.class);
+    private static String subject = "Company - Email confirmation";
+    private static String confirmationLink = "http://localhost:8080/api/registration/confirm?token=";
 
     static LocalDateTime getCurrentTimestamp() {
         return currentTimestamp;
     }
+    static String getSubject() {return subject;}
+    static String getConfirmationLink() {return confirmationLink;}
 
     static UserRequestDto createExampleUserRequestDto() {
         return UserRequestDto.builder()
