@@ -27,7 +27,7 @@ public class UserController {
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public UserResponseDto editUser(
             @PathVariable long id, @Valid @RequestBody UserUpdateRequestDto userUpdateRequestDto) {
-            return userService.editUser(userUpdateRequestDto);
+            return userService.editUser(id, userUpdateRequestDto);
     }
 
 }

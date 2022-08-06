@@ -28,6 +28,7 @@ public class User implements UserDetails {
     private String lastName;
     private String username;
     private String emailAddress;
+    @Column(updatable = false)
     private String password;
     private long createdBy;
     private LocalDateTime createdAt;

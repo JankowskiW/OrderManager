@@ -7,6 +7,7 @@ import pl.wj.ordermanager.user.model.User;
 import pl.wj.ordermanager.user.model.UserMapper;
 import pl.wj.ordermanager.user.model.dto.UserRequestDto;
 import pl.wj.ordermanager.user.model.dto.UserResponseDto;
+import pl.wj.ordermanager.user.model.dto.UserUpdateRequestDto;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -42,6 +43,14 @@ public class UserServiceTestHelper {
         return userMapper.userRequestDtoToUser(userRequestDto);
     }
 
+    static User mapUserUpdateRequestDtoToUser(UserUpdateRequestDto userUpdateRequestDto) {
+        return userMapper.userUpdateRequestDtoToUser(userUpdateRequestDto);
+    }
+
+    static UserResponseDto mapUserUpdateRequestDtoToUserResponseDto(UserUpdateRequestDto userUpdateRequestDto) {
+        return userMapper.userUpdateRequestDtoToUserResponseDto(userUpdateRequestDto);
+    }
+
     static UserDetails createExampleUserDetails(User user) {
         return user;
     }
@@ -50,9 +59,23 @@ public class UserServiceTestHelper {
         return userMapper.userToUserRequestDto(user);
     }
 
+    static UserUpdateRequestDto createExampleUserUpdateRequestDto() {
+        return userMapper.userToUserUpdateRequestDto(createExampleUser());
+    }
+
     public static User createExampleUser(boolean withRoles, long id) {
-        User user = new User();
+        User user = createExampleUser();
         user.setId(id);
+        if (withRoles) {
+            List<Role> userRoles = new ArrayList<>();
+            userRoles.add(createExampleRole());
+            user.setRoles(userRoles);
+        }
+        return user;
+    }
+
+    private static User createExampleUser() {
+        User user = new User();
         user.setFirstName("John");
         user.setLastName("Doe");
         user.setUsername("johndoe");
@@ -64,11 +87,6 @@ public class UserServiceTestHelper {
         user.setUpdatedAt(currentTimestamp);
         user.setLocked(false);
         user.setEnabled(false);
-        if (withRoles) {
-            List<Role> userRoles = new ArrayList<>();
-            userRoles.add(createExampleRole());
-            user.setRoles(userRoles);
-        }
         return user;
     }
 

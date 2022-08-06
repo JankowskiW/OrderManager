@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pl.wj.ordermanager.exception.ResourceNotFoundException;
 import pl.wj.ordermanager.user.model.User;
 import pl.wj.ordermanager.user.model.UserMapper;
 import pl.wj.ordermanager.user.model.dto.UserRequestDto;
@@ -25,11 +26,11 @@ public class UserService implements UserDetailsService {
     private final UserMapper userMapper;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String username)  {
         return getUserByUsername(username);
     }
 
-    public User getUserByUsername(String username) {
+    public User getUserByUsername(String username)  {
         return userRepository.getByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found in the database"));
     }
@@ -42,24 +43,35 @@ public class UserService implements UserDetailsService {
         return userRepository.save(user);
     }
 
-    private long getLoggedInUserId() throws UsernameNotFoundException {
-        return userRepository.getLoggedInUserId()
-                .orElseThrow(() -> new UsernameNotFoundException("User not found in the database"));
-    }
-
     private void encodeUserPassword(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
     }
 
     private User mapUserRequestDtoWithAuditFieldsToUser(UserRequestDto userRequestDto, long loggedInUserId) {
+        System.out.println("USER: " + userRequestDto.getUsername());
         User user = userMapper.userRequestDtoToUser(userRequestDto);
+        System.out.println("USER2: " + user.getUsername());
         user.setCreatedBy(loggedInUserId);
         user.setUpdatedBy(loggedInUserId);
         return user;
     }
 
-    public UserResponseDto editUser(UserUpdateRequestDto userUpdateRequestDto) {
-        throw new NotYetImplementedException();
+    public UserResponseDto editUser(long id, UserUpdateRequestDto userUpdateRequestDto) {
+        if(!userRepository.existsById(id)) throw new ResourceNotFoundException("user");
+        User user = mapUserUpdateRequestDtoWithAuditFieldsAndIdToUser(id, userUpdateRequestDto);
+        return userMapper.userToUserResponseDto(userRepository.save(user));
+    }
+
+    private User mapUserUpdateRequestDtoWithAuditFieldsAndIdToUser(long id, UserUpdateRequestDto userUpdateRequestDto) {
+        User user = userMapper.userUpdateRequestDtoToUser(userUpdateRequestDto);
+        user.setId(id);
+        user.setUpdatedBy(getLoggedInUserId());
+        return user;
+    }
+
+    private long getLoggedInUserId()  {
+        return userRepository.getLoggedInUserId()
+                .orElseThrow(() -> new UsernameNotFoundException("User not found in the database"));
     }
 
     public Page<UserResponseDto> getUsers(Boolean archived, Pageable pageable) {

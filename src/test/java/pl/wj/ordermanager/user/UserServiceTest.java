@@ -5,8 +5,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -19,7 +21,9 @@ import pl.wj.ordermanager.user.model.User;
 import pl.wj.ordermanager.user.model.UserMapper;
 import pl.wj.ordermanager.user.model.dto.UserRequestDto;
 import pl.wj.ordermanager.user.model.dto.UserResponseDto;
+import pl.wj.ordermanager.user.model.dto.UserUpdateRequestDto;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -38,8 +42,8 @@ class UserServiceTest {
     private UserRepository userRepository;
     @Mock
     private PasswordEncoder passwordEncoder;
-    @Mock
-    private UserMapper userMapper;
+    @Spy
+    private static UserMapper userMapper;
     @InjectMocks
     private UserService userService;
 
@@ -48,6 +52,7 @@ class UserServiceTest {
     @BeforeAll
     static void setUp() {
         allUsers = createListOfUserResponseDtos();
+        userMapper = Mappers.getMapper(UserMapper.class);
     }
 
     @Test
@@ -88,8 +93,7 @@ class UserServiceTest {
         UserRequestDto userRequestDto = createExampleUserRequestDto(expectedUser);
         expectedUser.setPassword(encodedPassword);
         given(userRepository.getLoggedInUserId()).willReturn(Optional.of(expectedUser.getId()));
-        given(userMapper.userRequestDtoToUser(any(UserRequestDto.class))).willReturn(
-                mapUserRequestDtoToUser(userRequestDto));
+        given(userMapper.userRequestDtoToUser(any(UserRequestDto.class))).willCallRealMethod();
         given(passwordEncoder.encode(anyString())).willReturn(encodedPassword);
         given(userRepository.save(any(User.class))).willAnswer(
                 i -> {
@@ -127,13 +131,33 @@ class UserServiceTest {
     @DisplayName("Should edit user")
     void shouldEditUser() {
         // given
+        long userId = 1L;
+        LocalDateTime updatedAt = LocalDateTime.now().plusDays(1);
+        UserUpdateRequestDto userUpdateRequestDto = createExampleUserUpdateRequestDto();
+        UserResponseDto expectedResponse = mapUserUpdateRequestDtoToUserResponseDto(userUpdateRequestDto);
+        expectedResponse.setId(userId);
+        expectedResponse.setUpdatedBy(userId);
+        expectedResponse.setUpdatedAt(updatedAt);
+        given(userRepository.existsById(anyLong())).willReturn(true);
+        given(userRepository.getLoggedInUserId()).willReturn(Optional.of(userId));
+        given(userRepository.save(any(User.class))).willAnswer(
+                i -> {
+                    User u = i.getArgument(0, User.class);
+                    u.setUpdatedBy(userId);
+                    u.setUpdatedAt(updatedAt);
+                    return u;
+                });
 
         // when
+        UserResponseDto userResponseDto = userService.editUser(userId, userUpdateRequestDto);
 
         // then
-        assertThatThrownBy(() -> userService.editUser(null))
-                .isInstanceOf(NotYetImplementedException.class);
+        assertThat(userResponseDto)
+                .isNotNull()
+                .usingRecursiveComparison()
+                .isEqualTo(expectedResponse);
     }
+
 
     @Test
     @DisplayName("Should return just one but not last page of users")
