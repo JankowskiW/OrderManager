@@ -1,11 +1,12 @@
 package pl.wj.ordermanager.role.model;
 
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import pl.wj.ordermanager.privilege.model.Privilege;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter

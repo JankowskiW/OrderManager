@@ -1,9 +1,6 @@
 package pl.wj.ordermanager.confirmationtoken.model;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import pl.wj.ordermanager.user.model.User;
 
 import javax.persistence.*;
@@ -12,6 +9,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode
 @Entity
 @Table(name="confirmation_tokens")

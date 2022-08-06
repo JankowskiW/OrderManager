@@ -1,8 +1,5 @@
 package pl.wj.ordermanager.user;
 
-import com.fasterxml.jackson.databind.cfg.MapperBuilder;
-import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 import org.springframework.security.core.userdetails.UserDetails;
 import pl.wj.ordermanager.role.model.Role;

@@ -1,14 +1,21 @@
 package pl.wj.ordermanager.registration;
 
 import org.mapstruct.factory.Mappers;
+import pl.wj.ordermanager.confirmationtoken.model.ConfirmationToken;
 import pl.wj.ordermanager.user.model.User;
 import pl.wj.ordermanager.user.model.UserMapper;
 import pl.wj.ordermanager.user.model.dto.UserRequestDto;
 import pl.wj.ordermanager.user.model.dto.UserResponseDto;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.UUID;
 
 public class RegistrationServiceTestHelper {
+
+    static final long TOKEN_EXPIRATION_TIME = 15;
+    static final String SENDER_EMAIL_ADDRESS = "example@example.com";
+    private static final long ELAPSED_TIME_SINCE_RECEIVED_EMAIL = 5L;
 
     private static LocalDateTime currentTimestamp = LocalDateTime.now();
     private static UserMapper userMapper = Mappers.getMapper(UserMapper.class);
@@ -20,6 +27,42 @@ public class RegistrationServiceTestHelper {
     }
     static String getSubject() {return subject;}
     static String getConfirmationLink() {return confirmationLink;}
+
+    static ConfirmationToken createExampleConfirmationToken(boolean confirmed, boolean expired) {
+        ConfirmationToken confirmationToken = new ConfirmationToken(
+                UUID.randomUUID().toString(),
+                currentTimestamp,
+                currentTimestamp.plusMinutes(TOKEN_EXPIRATION_TIME),
+                createExampleUser());
+        if (confirmed) makeTokenConfirmed(confirmationToken);
+        if (expired) makeTokenExpired(confirmationToken);
+        return confirmationToken;
+    }
+
+    private static void makeTokenExpired(ConfirmationToken token) {
+        token.setCreatedAt(token.getCreatedAt().minusMinutes(TOKEN_EXPIRATION_TIME + 1));
+        token.setExpiresAt(token.getExpiresAt().minusMinutes(TOKEN_EXPIRATION_TIME + 1));
+    }
+
+    private static void makeTokenConfirmed(ConfirmationToken token) {
+        token.setConfirmedAt(token.getCreatedAt().plusMinutes(ELAPSED_TIME_SINCE_RECEIVED_EMAIL));
+    }
+
+    private static User createExampleUser() {
+        User user = new User();
+        user.setId(2L);
+        user.setFirstName("John");
+        user.setLastName("Doe");
+        user.setUsername("johndoe");
+        user.setEmailAddress("jdoe@example.com");
+        user.setPassword("password");
+        user.setCreatedBy(1L);
+        user.setCreatedAt(currentTimestamp);
+        user.setUpdatedBy(1L);
+        user.setUpdatedAt(currentTimestamp);
+        user.setRoles(new ArrayList<>());
+        return user;
+    }
 
     static UserRequestDto createExampleUserRequestDto() {
         return UserRequestDto.builder()
@@ -35,7 +78,7 @@ public class RegistrationServiceTestHelper {
         return userMapper.userToUserResponseDto(user);
     }
 
-    public static User createExampleUser(UserRequestDto userRequestDto, long createdBy, long newUserId) {
+    static User createExampleUser(UserRequestDto userRequestDto, long createdBy, long newUserId) {
         User user = userMapper.userRequestDtoToUser(userRequestDto);
         user.setId(newUserId);
         user.setCreatedBy(createdBy);
@@ -44,4 +87,5 @@ public class RegistrationServiceTestHelper {
         user.setCreatedAt(currentTimestamp);
         return user;
     }
+
 }

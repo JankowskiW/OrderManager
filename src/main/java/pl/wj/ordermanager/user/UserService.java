@@ -2,7 +2,6 @@ package pl.wj.ordermanager.user;
 
 import lombok.AllArgsConstructor;
 import org.hibernate.cfg.NotYetImplementedException;
-import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;

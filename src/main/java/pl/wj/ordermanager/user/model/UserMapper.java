@@ -1,7 +1,6 @@
 package pl.wj.ordermanager.user.model;
 
 import org.mapstruct.Mapper;
-import org.springframework.security.core.userdetails.UserDetails;
 import pl.wj.ordermanager.user.model.dto.UserRequestDto;
 import pl.wj.ordermanager.user.model.dto.UserResponseDto;
 
