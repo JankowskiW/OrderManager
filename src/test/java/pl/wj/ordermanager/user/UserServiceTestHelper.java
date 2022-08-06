@@ -50,7 +50,7 @@ public class UserServiceTestHelper {
         return userMapper.userToUserRequestDto(user);
     }
 
-    static User createExampleUser(boolean withRoles, long id) {
+    public static User createExampleUser(boolean withRoles, long id) {
         User user = new User();
         user.setId(id);
         user.setFirstName("John");

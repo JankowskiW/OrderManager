@@ -12,8 +12,8 @@ public class ConfirmationTokenService {
 
     private final ConfirmationTokenRepository confirmationTokenRepository;
 
-    public void addConfirmationToken(ConfirmationToken confirmationToken) {
-        confirmationTokenRepository.save(confirmationToken);
+    public ConfirmationToken addConfirmationToken(ConfirmationToken confirmationToken) {
+       return confirmationTokenRepository.save(confirmationToken);
     }
 
     public ConfirmationToken getConfirmationToken(String token) throws RuntimeException {

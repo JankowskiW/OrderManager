@@ -1,6 +1,7 @@
 package pl.wj.ordermanager.registration;
 
 import org.mapstruct.factory.Mappers;
+import pl.wj.ordermanager.confirmationtoken.ConfirmationTokenServiceTestHelper;
 import pl.wj.ordermanager.confirmationtoken.model.ConfirmationToken;
 import pl.wj.ordermanager.user.model.User;
 import pl.wj.ordermanager.user.model.UserMapper;
@@ -8,8 +9,6 @@ import pl.wj.ordermanager.user.model.dto.UserRequestDto;
 import pl.wj.ordermanager.user.model.dto.UserResponseDto;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.UUID;
 
 public class RegistrationServiceTestHelper {
 
@@ -29,11 +28,7 @@ public class RegistrationServiceTestHelper {
     static String getConfirmationLink() {return confirmationLink;}
 
     static ConfirmationToken createExampleConfirmationToken(boolean confirmed, boolean expired) {
-        ConfirmationToken confirmationToken = new ConfirmationToken(
-                UUID.randomUUID().toString(),
-                currentTimestamp,
-                currentTimestamp.plusMinutes(TOKEN_EXPIRATION_TIME),
-                createExampleUser());
+        ConfirmationToken confirmationToken = ConfirmationTokenServiceTestHelper.createExampleConfirmationToken();
         if (confirmed) makeTokenConfirmed(confirmationToken);
         if (expired) makeTokenExpired(confirmationToken);
         return confirmationToken;
@@ -46,22 +41,6 @@ public class RegistrationServiceTestHelper {
 
     private static void makeTokenConfirmed(ConfirmationToken token) {
         token.setConfirmedAt(token.getCreatedAt().plusMinutes(ELAPSED_TIME_SINCE_RECEIVED_EMAIL));
-    }
-
-    private static User createExampleUser() {
-        User user = new User();
-        user.setId(2L);
-        user.setFirstName("John");
-        user.setLastName("Doe");
-        user.setUsername("johndoe");
-        user.setEmailAddress("jdoe@example.com");
-        user.setPassword("password");
-        user.setCreatedBy(1L);
-        user.setCreatedAt(currentTimestamp);
-        user.setUpdatedBy(1L);
-        user.setUpdatedAt(currentTimestamp);
-        user.setRoles(new ArrayList<>());
-        return user;
     }
 
     static UserRequestDto createExampleUserRequestDto() {

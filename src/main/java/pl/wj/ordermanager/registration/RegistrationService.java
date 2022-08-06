@@ -54,8 +54,7 @@ public class RegistrationService {
                 LocalDateTime.now().plusMinutes(confirmationTokenExpirationTime),
                 user
         );
-        confirmationTokenService.addConfirmationToken(confirmationToken);
-        return confirmationToken.getToken();
+        return confirmationTokenService.addConfirmationToken(confirmationToken).getToken();
     }
 
     private void sendVerificationEmailMessage(User user, String confirmationToken) {

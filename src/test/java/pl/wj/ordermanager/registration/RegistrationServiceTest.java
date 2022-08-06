@@ -54,6 +54,7 @@ class RegistrationServiceTest {
     @DisplayName("Should register new user and send confirmation token")
     void shouldRegisterNewUserAndSendConfirmationToken() {
         // given
+        long tokenId = 1L;
         long createdBy = 1L;
         long newUserId = 2L;
         UserRequestDto userRequestDto = createExampleUserRequestDto();
@@ -61,6 +62,12 @@ class RegistrationServiceTest {
         UserResponseDto expectedResponse = createExampleUserResponseDto(user);
 
         given(userService.addUser(any(UserRequestDto.class))).willReturn(user);
+        given(confirmationTokenService.addConfirmationToken(any(ConfirmationToken.class))).willAnswer(
+                i -> {
+                    ConfirmationToken ct = i.getArgument(0, ConfirmationToken.class);
+                    ct.setId(tokenId);
+                    return  ct;
+                });
         willDoNothing().given(emailSender).send(
                 anyString(), anyString(), anyString(),
                 anyString(), anyString(), anyLong());
