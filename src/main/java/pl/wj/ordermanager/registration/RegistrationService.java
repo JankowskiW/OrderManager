@@ -67,8 +67,7 @@ public class RegistrationService {
 
     @Transactional
     public String confirmEmail(String token) {
-        ConfirmationToken confirmationToken = confirmationTokenService.getConfirmationToken(token)
-                .orElseThrow(() -> new RuntimeException("Token not found"));
+        ConfirmationToken confirmationToken = confirmationTokenService.getConfirmationToken(token);
         validateConfirmationToken(confirmationToken);
         confirmEmailAddress(confirmationToken);
         return "Email address confirmed";

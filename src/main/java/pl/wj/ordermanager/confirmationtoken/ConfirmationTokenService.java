@@ -16,8 +16,8 @@ public class ConfirmationTokenService {
         confirmationTokenRepository.save(confirmationToken);
     }
 
-    public Optional<ConfirmationToken> getConfirmationToken(String token) {
-        return confirmationTokenRepository.findByToken(token);
+    public ConfirmationToken getConfirmationToken(String token) throws RuntimeException {
+        return confirmationTokenRepository.findByToken(token).orElseThrow(() -> new RuntimeException("Token not found"));
     }
 
     public void updateConfirmationToken(ConfirmationToken confirmationToken) {

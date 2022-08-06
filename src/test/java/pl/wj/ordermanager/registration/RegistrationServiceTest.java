@@ -17,8 +17,6 @@ import pl.wj.ordermanager.user.model.UserMapper;
 import pl.wj.ordermanager.user.model.dto.UserRequestDto;
 import pl.wj.ordermanager.user.model.dto.UserResponseDto;
 
-import java.util.Optional;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
@@ -86,7 +84,7 @@ class RegistrationServiceTest {
         // given
         ConfirmationToken confirmationToken = createExampleConfirmationToken(false, false);
         String expectedResponse = "Email address confirmed";
-        given(confirmationTokenService.getConfirmationToken(anyString())).willReturn(Optional.of(confirmationToken));
+        given(confirmationTokenService.getConfirmationToken(anyString())).willReturn(confirmationToken);
         willDoNothing().given(confirmationTokenService).updateConfirmationToken(any(ConfirmationToken.class));
         willDoNothing().given(userService).enableUser(any(User.class));
 
@@ -106,7 +104,10 @@ class RegistrationServiceTest {
     void shouldThrowExceptionWhenTokenDoesNotExistInDatabase() {
         // given
         String exampleToken = "exampleToken";
-        given(confirmationTokenService.getConfirmationToken(anyString())).willReturn(Optional.empty());
+        given(confirmationTokenService.getConfirmationToken(anyString()))
+                .willAnswer(
+                        i -> { throw new RuntimeException("Token not found"); }
+                );
 
         // when
         assertThatThrownBy(() -> registrationService.confirmEmail(exampleToken))
@@ -119,7 +120,7 @@ class RegistrationServiceTest {
     void shouldThrowExceptionWhenEmailAlreadyConfirmed() {
         // given
         ConfirmationToken confirmationToken = createExampleConfirmationToken(true, false);
-        given(confirmationTokenService.getConfirmationToken(anyString())).willReturn(Optional.of(confirmationToken));
+        given(confirmationTokenService.getConfirmationToken(anyString())).willReturn(confirmationToken);
 
         // when
         assertThatThrownBy(() -> registrationService.confirmEmail(confirmationToken.getToken()))
@@ -132,7 +133,7 @@ class RegistrationServiceTest {
     void shouldThrowExceptionWhenTokenWhenConfirmationTokenExpired() {
         // given
         ConfirmationToken confirmationToken = createExampleConfirmationToken(false, true);
-        given(confirmationTokenService.getConfirmationToken(anyString())).willReturn(Optional.of(confirmationToken));
+        given(confirmationTokenService.getConfirmationToken(anyString())).willReturn(confirmationToken);
 
         // when
         assertThatThrownBy(() -> registrationService.confirmEmail(confirmationToken.getToken()))
