@@ -2,6 +2,7 @@ package pl.wj.ordermanager.user;
 
 import org.mapstruct.factory.Mappers;
 import org.springframework.security.core.userdetails.UserDetails;
+import pl.wj.ordermanager.exception.ExceptionHelper;
 import pl.wj.ordermanager.role.model.Role;
 import pl.wj.ordermanager.user.model.User;
 import pl.wj.ordermanager.user.model.UserMapper;
@@ -19,6 +20,10 @@ public class UserServiceTestHelper {
 
     private static LocalDateTime currentTimestamp = LocalDateTime.now();
     private static UserMapper userMapper = Mappers.getMapper(UserMapper.class);
+
+    static String createUserNotFoundMessage() {
+        return ExceptionHelper.createResourceNotFoundMessage("user");
+    }
 
     static List<UserResponseDto> createListOfUserResponseDtos() {
         List<UserResponseDto> userResponseDtos = new ArrayList<>();

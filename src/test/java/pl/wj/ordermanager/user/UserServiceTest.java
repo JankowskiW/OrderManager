@@ -1,6 +1,5 @@
 package pl.wj.ordermanager.user;
 
-import org.hibernate.cfg.NotYetImplementedException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import pl.wj.ordermanager.exception.ResourceNotFoundException;
 import pl.wj.ordermanager.user.model.User;
 import pl.wj.ordermanager.user.model.UserMapper;
 import pl.wj.ordermanager.user.model.dto.UserRequestDto;
@@ -158,6 +158,33 @@ class UserServiceTest {
                 .isEqualTo(expectedResponse);
     }
 
+    @Test
+    @DisplayName("Should throw ResourceNotFoundException when user id does not exist in database")
+    void shouldThrowExceptionWhenEditedUserIdDoesNotExist() {
+        // given
+        long userId = 100L;
+        given(userRepository.existsById(anyLong())).willReturn(false);
+
+        // when
+        assertThatThrownBy(() -> userService.editUser(userId, createExampleUserUpdateRequestDto()))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(createUserNotFoundMessage());
+    }
+
+
+    @Test
+    @DisplayName("Should throw UsernameNotFoundException when logged in user does not exist in user edit")
+    void shouldThrowExceptionWhenLoggedInUserDoesNotExistInUserEdit() {
+        // given
+        long userId = 100L;
+        given(userRepository.existsById(anyLong())).willReturn(true);
+        given(userRepository.getLoggedInUserId()).willReturn(Optional.empty());
+
+        // when
+        assertThatThrownBy(() -> userService.editUser(userId, createExampleUserUpdateRequestDto()))
+                .isInstanceOf(UsernameNotFoundException.class)
+                .hasMessage("User not found in the database");
+    }
 
     @Test
     @DisplayName("Should return just one but not last page of users")
