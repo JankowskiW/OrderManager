@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.wj.ordermanager.confirmationtoken.model.ConfirmationToken;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -20,7 +21,7 @@ public class ConfirmationTokenService {
         return confirmationTokenRepository.findByToken(token).orElseThrow(() -> new RuntimeException("Token not found"));
     }
 
-    public void updateConfirmationToken(ConfirmationToken confirmationToken) {
-        confirmationTokenRepository.save(confirmationToken);
+    public ConfirmationToken updateConfirmationToken(ConfirmationToken confirmationToken) {
+        return confirmationTokenRepository.save(confirmationToken);
     }
 }

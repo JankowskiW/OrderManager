@@ -16,6 +16,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static pl.wj.ordermanager.confirmationtoken.ConfirmationTokenServiceTestHelper.createExampleConfirmationToken;
+import static pl.wj.ordermanager.confirmationtoken.ConfirmationTokenServiceTestHelper.generateExampleToken;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -31,9 +33,10 @@ class ConfirmationTokenServiceTest {
     void shouldSaveNewConfirmationTokenInDatabase() {
         // given
         long tokenId = 1L;
-        ConfirmationToken confirmationToken = ConfirmationTokenServiceTestHelper.createExampleConfirmationToken();
-        ConfirmationToken expectedResponse = confirmationToken;
-        confirmationToken.setId(tokenId);
+        String token = generateExampleToken();
+        ConfirmationToken confirmationToken = createExampleConfirmationToken(token);
+        ConfirmationToken expectedResponse = createExampleConfirmationToken(token);
+        expectedResponse.setId(tokenId);
         given(confirmationTokenRepository.save(any(ConfirmationToken.class))).willAnswer(
                 i -> {
                     ConfirmationToken ct = i.getArgument(0, ConfirmationToken.class);
@@ -56,7 +59,7 @@ class ConfirmationTokenServiceTest {
     void shouldFindByTokenAndReturnConfirmationTokenDetails() {
         // given
         long tokenId = 1L;
-        ConfirmationToken expectedResponse = ConfirmationTokenServiceTestHelper.createExampleConfirmationToken();
+        ConfirmationToken expectedResponse = createExampleConfirmationToken();
         expectedResponse.setId(tokenId);
         given(confirmationTokenRepository.findByToken(anyString())).willReturn(Optional.of(expectedResponse));
 
@@ -88,19 +91,23 @@ class ConfirmationTokenServiceTest {
     void shouldUpdateConfirmationTokenDetailsInDatabase() {
         // given
         long tokenId = 1L;
-        ConfirmationToken confirmationToken = ConfirmationTokenServiceTestHelper.createExampleConfirmationToken();
+        LocalDateTime confirmedAt = LocalDateTime.now().plusMinutes(5);
+        String token = generateExampleToken();
+        ConfirmationToken confirmationToken = createExampleConfirmationToken(token);
         confirmationToken.setId(tokenId);
-        ConfirmationToken expectedResponse = confirmationToken;
-        confirmationToken.setConfirmedAt(LocalDateTime.now());
+        ConfirmationToken expectedResponse = createExampleConfirmationToken(token);
+        expectedResponse.setId(tokenId);
+        expectedResponse.setConfirmedAt(confirmedAt);
+
         given(confirmationTokenRepository.save(any(ConfirmationToken.class))).willAnswer(
                 i -> {
                     ConfirmationToken ct = i.getArgument(0, ConfirmationToken.class);
-                    ct.setCreatedAt(expectedResponse.getConfirmedAt());
+                    ct.setConfirmedAt(confirmedAt);
                     return ct;
                 });
 
         // when
-        confirmationToken = confirmationTokenService.addConfirmationToken(confirmationToken);
+        confirmationToken = confirmationTokenService.updateConfirmationToken(confirmationToken);
 
         // then
         assertThat(confirmationToken)

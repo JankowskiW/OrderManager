@@ -68,15 +68,28 @@ public class UserServiceTestHelper {
         return userMapper.userToUserUpdateRequestDto(createExampleUser());
     }
 
+    public static User createExampleUser(boolean withRoles, String username) {
+        User user = createExampleUser();
+        user.setUsername(username);
+        if (withRoles) {
+            user.setRoles(createExampleRoles());
+        }
+        return user;
+    }
+
     public static User createExampleUser(boolean withRoles, long id) {
         User user = createExampleUser();
         user.setId(id);
         if (withRoles) {
-            List<Role> userRoles = new ArrayList<>();
-            userRoles.add(createExampleRole());
-            user.setRoles(userRoles);
+            user.setRoles(createExampleRoles());
         }
         return user;
+    }
+
+    private static List<Role> createExampleRoles() {
+        List<Role> userRoles = new ArrayList<>();
+        userRoles.add(createExampleRole());
+        return userRoles;
     }
 
     private static User createExampleUser() {

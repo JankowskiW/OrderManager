@@ -36,7 +36,6 @@ class RegistrationServiceTest {
 
     private RegistrationService registrationService;
 
-
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);

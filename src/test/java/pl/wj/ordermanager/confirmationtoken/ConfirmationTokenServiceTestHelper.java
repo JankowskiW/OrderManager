@@ -12,11 +12,22 @@ public class ConfirmationTokenServiceTestHelper {
     private static LocalDateTime currentTimestamp = LocalDateTime.now();
 
     public static ConfirmationToken createExampleConfirmationToken() {
-        ConfirmationToken confirmationToken = new ConfirmationToken(
-                UUID.randomUUID().toString(),
+        return new ConfirmationToken(
+                generateExampleToken(),
                 currentTimestamp,
                 currentTimestamp.plusMinutes(TOKEN_EXPIRATION_TIME),
                 UserServiceTestHelper.createExampleUser(false, 1L));
-        return confirmationToken;
+    }
+
+    public static ConfirmationToken createExampleConfirmationToken(String token) {
+        return new ConfirmationToken(
+                token,
+                currentTimestamp,
+                currentTimestamp.plusMinutes(TOKEN_EXPIRATION_TIME),
+                UserServiceTestHelper.createExampleUser(false, 1L));
+    }
+
+    public static String generateExampleToken() {
+        return UUID.randomUUID().toString();
     }
 }
