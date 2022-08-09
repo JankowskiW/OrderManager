@@ -89,9 +89,12 @@ class RegistrationServiceTest {
     void shouldConfirmEmailUsingConfirmationToken() {
         // given
         ConfirmationToken confirmationToken = createExampleConfirmationToken(false, false);
+        ConfirmationToken confirmedConfirmationToken = createExampleConfirmationToken(true, false);
+        System.out.println(confirmationToken.getCreatedAt());
+        System.out.println(confirmedConfirmationToken.getCreatedAt());
         String expectedResponse = "Email address confirmed";
         given(confirmationTokenService.getConfirmationToken(anyString())).willReturn(confirmationToken);
-        willDoNothing().given(confirmationTokenService).updateConfirmationToken(any(ConfirmationToken.class));
+        given(confirmationTokenService.updateConfirmationToken(any(ConfirmationToken.class))).willReturn(confirmedConfirmationToken);
         willDoNothing().given(userService).enableUser(any(User.class));
 
         // when
@@ -111,9 +114,7 @@ class RegistrationServiceTest {
         // given
         String exampleToken = "exampleToken";
         given(confirmationTokenService.getConfirmationToken(anyString()))
-                .willAnswer(
-                        i -> { throw new RuntimeException("Token not found"); }
-                );
+                .willAnswer(i -> { throw new RuntimeException("Token not found"); });
 
         // when
         assertThatThrownBy(() -> registrationService.confirmEmail(exampleToken))

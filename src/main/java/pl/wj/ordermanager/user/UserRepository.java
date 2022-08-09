@@ -40,4 +40,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "u.updatedBy, u.updatedAt, u.archivedBy, u.archivedAt) FROM User u " +
             "WHERE (:archived = true AND u.archivedBy IS NOT NULL) OR (:archived = false AND u.archivedBy IS NULL)")
     Page<UserResponseDto> getUsers(Boolean archived, Pageable pageable);
+
+    boolean existsByUsernameOrEmailAddress(String username, String emailAddress);
 }

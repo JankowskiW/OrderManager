@@ -16,6 +16,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import pl.wj.ordermanager.exception.ExceptionHelper;
+import pl.wj.ordermanager.exception.ResourceExistsException;
 import pl.wj.ordermanager.exception.ResourceNotFoundException;
 import pl.wj.ordermanager.user.model.User;
 import pl.wj.ordermanager.user.model.UserMapper;
@@ -92,6 +94,7 @@ class UserServiceTest {
         User expectedUser = createExampleUser(false, 1L);
         UserRequestDto userRequestDto = createExampleUserRequestDto(expectedUser);
         expectedUser.setPassword(encodedPassword);
+        given(userRepository.existsByUsernameOrEmailAddress(anyString(), anyString())).willReturn(false);
         given(userRepository.getLoggedInUserId()).willReturn(Optional.of(expectedUser.getId()));
         given(userMapper.userRequestDtoToUser(any(UserRequestDto.class))).willCallRealMethod();
         given(passwordEncoder.encode(anyString())).willReturn(encodedPassword);
@@ -115,9 +118,23 @@ class UserServiceTest {
     }
 
     @Test
+    @DisplayName("Should throw ResourceExistsException when user exists by username or email")
+    void shouldThrowExceptionWhenUserExistsByUsernameOrEmail() {
+        // given
+        given(userRepository.existsByUsernameOrEmailAddress(anyString(), anyString())).willReturn(true);
+
+        // when
+        assertThatThrownBy(() -> userService.addUser(
+                createExampleUserRequestDto(createExampleUser(false, 1L))))
+                .isInstanceOf(ResourceExistsException.class)
+                .hasMessage(ExceptionHelper.createResourceExistsExceptionMessage("user", "username or email address"));
+    }
+
+    @Test
     @DisplayName("Should throw UsernameNotFoundException when logged in user does not exist")
     void shouldThrowExceptionWhenLoggedInUserDoesNotExist() {
         // given
+        given(userRepository.existsByUsernameOrEmailAddress(anyString(), anyString())).willReturn(false);
         given(userRepository.getLoggedInUserId()).willReturn(Optional.empty());
 
         // when

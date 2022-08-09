@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pl.wj.ordermanager.exception.ResourceExistsException;
 import pl.wj.ordermanager.exception.ResourceNotFoundException;
 import pl.wj.ordermanager.user.model.User;
 import pl.wj.ordermanager.user.model.UserMapper;
@@ -37,6 +38,9 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public User addUser(UserRequestDto userRequestDto) {
+        if(userRepository.existsByUsernameOrEmailAddress(userRequestDto.getUsername(), userRequestDto.getEmailAddress())) {
+            throw new ResourceExistsException("user", "username or email address");
+        }
         long loggedInUserId = getLoggedInUserId();
         User user = mapUserRequestDtoWithAuditFieldsToUser(userRequestDto, loggedInUserId);
         encodeUserPassword(user);
@@ -48,9 +52,7 @@ public class UserService implements UserDetailsService {
     }
 
     private User mapUserRequestDtoWithAuditFieldsToUser(UserRequestDto userRequestDto, long loggedInUserId) {
-        System.out.println("USER: " + userRequestDto.getUsername());
         User user = userMapper.userRequestDtoToUser(userRequestDto);
-        System.out.println("USER2: " + user.getUsername());
         user.setCreatedBy(loggedInUserId);
         user.setUpdatedBy(loggedInUserId);
         return user;

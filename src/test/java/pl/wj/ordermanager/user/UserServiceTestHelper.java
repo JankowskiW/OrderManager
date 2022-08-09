@@ -22,7 +22,7 @@ public class UserServiceTestHelper {
     private static UserMapper userMapper = Mappers.getMapper(UserMapper.class);
 
     static String createUserNotFoundMessage() {
-        return ExceptionHelper.createResourceNotFoundMessage("user");
+        return ExceptionHelper.createResourceNotFoundExceptionMessage("user");
     }
 
     static List<UserResponseDto> createListOfUserResponseDtos() {
