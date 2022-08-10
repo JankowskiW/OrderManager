@@ -188,7 +188,7 @@ class UserServiceTest {
     void shouldThrowExceptionWhenCannotFindEditedUser() {
         // given
         long userId = 100L;
-        given(userRepository.existsById(anyLong())).willReturn(false);
+        given(userRepository.findById(anyLong())).willReturn(Optional.empty());
 
         // when
         assertThatThrownBy(() -> userService.editUser(userId, createExampleUserUpdateRequestDto()))
@@ -202,7 +202,7 @@ class UserServiceTest {
     void shouldThrowExceptionWhenLoggedInUserDoesNotExistInUserEdit() {
         // given
         long userId = 100L;
-        given(userRepository.existsById(anyLong())).willReturn(true);
+        given(userRepository.findById(anyLong())).willReturn(Optional.of(createExampleUser(false, userId)));
         given(userRepository.getLoggedInUserId()).willReturn(Optional.empty());
 
         // when
@@ -443,8 +443,8 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("Should reset user password")
-    void shouldResetUserPassword() {
+    @DisplayName("Should change user password")
+    void shouldChangeUserPassword() {
         // given
         long loggedInUserId = 1L;
         String encodedPassword = "EncodedNewPassword";

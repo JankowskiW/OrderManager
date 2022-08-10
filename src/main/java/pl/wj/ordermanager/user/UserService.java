@@ -88,6 +88,10 @@ public class UserService implements UserDetailsService {
     }
 
     public void changePassword(UserPasswordDto userPasswordDto) {
-        throw new NotYetImplementedException();
+        long loggedInUserId = getLoggedInUserId();
+        User user = userRepository.findById(loggedInUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("user"));
+        user.setPassword(passwordEncoder.encode(userPasswordDto.getPassword()));
+        userRepository.save(user);
     }
 }

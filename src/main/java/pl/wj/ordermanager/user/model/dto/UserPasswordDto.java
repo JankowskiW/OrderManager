@@ -1,9 +1,11 @@
 package pl.wj.ordermanager.user.model.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import javax.validation.constraints.Pattern;
 
+@Getter
 @AllArgsConstructor
 public class UserPasswordDto {
     @Pattern(regexp="^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#&()–[{}]:;',?/*~$^+=<>]).{8,20}$",
