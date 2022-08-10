@@ -14,6 +14,7 @@ import pl.wj.ordermanager.exception.ResourceExistsException;
 import pl.wj.ordermanager.exception.ResourceNotFoundException;
 import pl.wj.ordermanager.user.model.User;
 import pl.wj.ordermanager.user.model.UserMapper;
+import pl.wj.ordermanager.user.model.dto.UserPasswordDto;
 import pl.wj.ordermanager.user.model.dto.UserRequestDto;
 import pl.wj.ordermanager.user.model.dto.UserResponseDto;
 import pl.wj.ordermanager.user.model.dto.UserUpdateRequestDto;
@@ -59,13 +60,13 @@ public class UserService implements UserDetailsService {
     }
 
     public UserResponseDto editUser(long id, UserUpdateRequestDto userUpdateRequestDto) {
-        if(!userRepository.existsById(id)) throw new ResourceNotFoundException("user");
-        User user = mapUserUpdateRequestDtoWithAuditFieldsAndIdToUser(id, userUpdateRequestDto);
+        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("user"));
+        user = mapUserUpdateRequestDtoWithAuditFieldsAndIdToUser(id, userUpdateRequestDto, user);
         return userMapper.userToUserResponseDto(userRepository.save(user));
     }
 
-    private User mapUserUpdateRequestDtoWithAuditFieldsAndIdToUser(long id, UserUpdateRequestDto userUpdateRequestDto) {
-        User user = userMapper.userUpdateRequestDtoToUser(userUpdateRequestDto);
+    private User mapUserUpdateRequestDtoWithAuditFieldsAndIdToUser(long id, UserUpdateRequestDto userUpdateRequestDto, User user) {
+        user = userMapper.userUpdateRequestDtoToUser(userUpdateRequestDto, user);
         user.setId(id);
         user.setUpdatedBy(getLoggedInUserId());
         return user;
@@ -84,5 +85,9 @@ public class UserService implements UserDetailsService {
     public void enableUser(User user) {
         user.setEnabled(true);
         userRepository.save(user);
+    }
+
+    public void changePassword(UserPasswordDto userPasswordDto) {
+        throw new NotYetImplementedException();
     }
 }

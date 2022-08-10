@@ -149,19 +149,25 @@ class UserServiceTest {
     void shouldEditUser() {
         // given
         long userId = 1L;
+        String firstName = "July";
         LocalDateTime updatedAt = LocalDateTime.now().plusDays(1);
-        UserUpdateRequestDto userUpdateRequestDto = createExampleUserUpdateRequestDto();
-        UserResponseDto expectedResponse = mapUserUpdateRequestDtoToUserResponseDto(userUpdateRequestDto);
+        User user = createExampleUser(false, userId);
+        UserUpdateRequestDto userUpdateRequestDto = createExampleUserUpdateRequestDto(user);
+        userUpdateRequestDto.setFirstName(firstName);
+        UserResponseDto expectedResponse = mapUserToUserResponseDto(user);
         expectedResponse.setId(userId);
+        expectedResponse.setFirstName(firstName);
         expectedResponse.setUpdatedBy(userId);
         expectedResponse.setUpdatedAt(updatedAt);
-        given(userRepository.existsById(anyLong())).willReturn(true);
+
+        given(userRepository.findById(anyLong())).willReturn(Optional.of(user));
         given(userRepository.getLoggedInUserId()).willReturn(Optional.of(userId));
         given(userRepository.save(any(User.class))).willAnswer(
                 i -> {
                     User u = i.getArgument(0, User.class);
                     u.setUpdatedBy(userId);
                     u.setUpdatedAt(updatedAt);
+                    u.setFirstName(firstName);
                     return u;
                 });
 
@@ -434,4 +440,27 @@ class UserServiceTest {
         assertThat(user.isEnabled()).isEqualTo(true);
     }
 
+    @Test
+    @DisplayName("Should reset user password")
+    void shouldResetUserPassword() {
+        // given
+        long loggedInUserId = 1L;
+        String encodedPassword = "EncodedPassword";
+        User user = createExampleUser(false, loggedInUserId);
+        given(userRepository.getLoggedInUserId()).willReturn(Optional.of(loggedInUserId));
+        given(userRepository.findById(anyLong())).willReturn(Optional.of(user));
+        given(passwordEncoder.encode(anyString())).willReturn(encodedPassword);
+        given(userRepository.save(any(User.class))).willAnswer(
+                i -> {
+                    User u = i.getArgument(0, User.class);
+                    u.setUpdatedAt(getCurrentTimestamp());
+                    u.setPassword(encodedPassword);
+                    return u;
+                });
+
+        // when
+
+
+        // then
+    }
 }

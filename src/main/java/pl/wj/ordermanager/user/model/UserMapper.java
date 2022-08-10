@@ -13,4 +13,11 @@ public interface UserMapper {
     User userUpdateRequestDtoToUser(UserUpdateRequestDto userUpdateRequestDto);
     UserUpdateRequestDto userToUserUpdateRequestDto(User exampleUser);
     UserResponseDto userUpdateRequestDtoToUserResponseDto(UserUpdateRequestDto userUpdateRequestDto);
+    default User userUpdateRequestDtoToUser(UserUpdateRequestDto userUpdateRequestDto, User user) {
+        if (!userUpdateRequestDto.getUsername().isBlank()) user.setUsername(userUpdateRequestDto.getUsername());
+        if (!userUpdateRequestDto.getFirstName().isBlank()) user.setFirstName(userUpdateRequestDto.getFirstName());
+        if (!userUpdateRequestDto.getLastName().isBlank()) user.setLastName(userUpdateRequestDto.getLastName());
+        if (!userUpdateRequestDto.getEmailAddress().isBlank()) user.setEmailAddress(userUpdateRequestDto.getEmailAddress());
+        return  user;
+    }
 }

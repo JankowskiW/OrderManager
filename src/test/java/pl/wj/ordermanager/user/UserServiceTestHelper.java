@@ -44,6 +44,10 @@ public class UserServiceTestHelper {
         return currentTimestamp;
     }
 
+    static UserResponseDto mapUserToUserResponseDto(User user) {
+        return userMapper.userToUserResponseDto(user);
+    }
+
     static User mapUserRequestDtoToUser(UserRequestDto userRequestDto) {
         return userMapper.userRequestDtoToUser(userRequestDto);
     }
@@ -66,6 +70,9 @@ public class UserServiceTestHelper {
 
     static UserUpdateRequestDto createExampleUserUpdateRequestDto() {
         return userMapper.userToUserUpdateRequestDto(createExampleUser());
+    }
+    static UserUpdateRequestDto createExampleUserUpdateRequestDto(User user) {
+        return userMapper.userToUserUpdateRequestDto(user);
     }
 
     public static User createExampleUser(boolean withRoles, String username) {
