@@ -21,6 +21,7 @@ import pl.wj.ordermanager.exception.ResourceExistsException;
 import pl.wj.ordermanager.exception.ResourceNotFoundException;
 import pl.wj.ordermanager.user.model.User;
 import pl.wj.ordermanager.user.model.UserMapper;
+import pl.wj.ordermanager.user.model.dto.UserPasswordDto;
 import pl.wj.ordermanager.user.model.dto.UserRequestDto;
 import pl.wj.ordermanager.user.model.dto.UserResponseDto;
 import pl.wj.ordermanager.user.model.dto.UserUpdateRequestDto;
@@ -36,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static pl.wj.ordermanager.exception.ExceptionHelper.createResourceNotFoundExceptionMessage;
 import static pl.wj.ordermanager.user.UserServiceTestHelper.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -182,8 +184,8 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw ResourceNotFoundException when user id does not exist in database")
-    void shouldThrowExceptionWhenEditedUserIdDoesNotExist() {
+    @DisplayName("Should throw ResourceNotFoundException when cannot find edited user")
+    void shouldThrowExceptionWhenCannotFindEditedUser() {
         // given
         long userId = 100L;
         given(userRepository.existsById(anyLong())).willReturn(false);
@@ -445,8 +447,10 @@ class UserServiceTest {
     void shouldResetUserPassword() {
         // given
         long loggedInUserId = 1L;
-        String encodedPassword = "EncodedPassword";
+        String encodedPassword = "EncodedNewPassword";
+        UserPasswordDto userPasswordDto = new UserPasswordDto("NewPassword");
         User user = createExampleUser(false, loggedInUserId);
+        user.setPassword(encodedPassword);
         given(userRepository.getLoggedInUserId()).willReturn(Optional.of(loggedInUserId));
         given(userRepository.findById(anyLong())).willReturn(Optional.of(user));
         given(passwordEncoder.encode(anyString())).willReturn(encodedPassword);
@@ -459,8 +463,40 @@ class UserServiceTest {
                 });
 
         // when
-
+        userService.changePassword(userPasswordDto);
 
         // then
+        verify(userRepository).save(user);
+        assertThat(userRepository.save(user).getPassword())
+                .isNotNull()
+                .isEqualTo(encodedPassword);
     }
+
+    @Test
+    @DisplayName("Should throw UsernameNotFoundException when cannot find logged in user id")
+    void shouldThrowExceptionWhenCannotFindLoggedInUserId() {
+        // given
+        given(userRepository.getLoggedInUserId()).willReturn(Optional.empty());
+
+        // when
+        assertThatThrownBy(() -> userService.changePassword(new UserPasswordDto("NewPassword")))
+                .isInstanceOf(UsernameNotFoundException.class)
+                .hasMessage("User not found in the database");
+    }
+
+    @Test
+    @DisplayName("Should throw ResourceNotFoundException when cannot find user")
+    void shouldThrowExceptionWhenCannotFindUser() {
+        // given
+        long loggedInUser = 1L;
+        given(userRepository.getLoggedInUserId()).willReturn(Optional.of(loggedInUser));
+        given(userRepository.findById(anyLong())).willReturn(Optional.empty());
+
+        // when
+        assertThatThrownBy(() -> userService.changePassword(new UserPasswordDto("NewPassword")))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(createResourceNotFoundExceptionMessage("user"));
+
+    }
+
 }
