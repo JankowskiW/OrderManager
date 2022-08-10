@@ -21,7 +21,6 @@ import pl.wj.ordermanager.exception.ResourceExistsException;
 import pl.wj.ordermanager.exception.ResourceNotFoundException;
 import pl.wj.ordermanager.user.model.User;
 import pl.wj.ordermanager.user.model.UserMapper;
-import pl.wj.ordermanager.user.model.dto.UserPasswordDto;
 import pl.wj.ordermanager.user.model.dto.UserRequestDto;
 import pl.wj.ordermanager.user.model.dto.UserResponseDto;
 import pl.wj.ordermanager.user.model.dto.UserUpdateRequestDto;
@@ -447,8 +446,8 @@ class UserServiceTest {
     void shouldChangeUserPassword() {
         // given
         long loggedInUserId = 1L;
-        String encodedPassword = "EncodedNewPassword";
-        UserPasswordDto userPasswordDto = new UserPasswordDto("NewPassword");
+        String password = "NewPassword";
+        String encodedPassword = "Encoded"+password;
         User user = createExampleUser(false, loggedInUserId);
         user.setPassword(encodedPassword);
         given(userRepository.getLoggedInUserId()).willReturn(Optional.of(loggedInUserId));
@@ -463,7 +462,7 @@ class UserServiceTest {
                 });
 
         // when
-        userService.changePassword(userPasswordDto);
+        userService.changePassword(password);
 
         // then
         verify(userRepository).save(user);
@@ -479,7 +478,7 @@ class UserServiceTest {
         given(userRepository.getLoggedInUserId()).willReturn(Optional.empty());
 
         // when
-        assertThatThrownBy(() -> userService.changePassword(new UserPasswordDto("NewPassword")))
+        assertThatThrownBy(() -> userService.changePassword("NewPassword"))
                 .isInstanceOf(UsernameNotFoundException.class)
                 .hasMessage("User not found in the database");
     }
@@ -493,7 +492,7 @@ class UserServiceTest {
         given(userRepository.findById(anyLong())).willReturn(Optional.empty());
 
         // when
-        assertThatThrownBy(() -> userService.changePassword(new UserPasswordDto("NewPassword")))
+        assertThatThrownBy(() -> userService.changePassword("NewPassword"))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage(createResourceNotFoundExceptionMessage("user"));
 

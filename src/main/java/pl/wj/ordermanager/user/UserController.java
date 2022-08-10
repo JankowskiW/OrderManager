@@ -5,7 +5,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import pl.wj.ordermanager.user.model.dto.UserPasswordDto;
 import pl.wj.ordermanager.user.model.dto.UserResponseDto;
 import pl.wj.ordermanager.user.model.dto.UserUpdateRequestDto;
 
@@ -33,7 +32,14 @@ public class UserController {
 
     @PutMapping("/password")
     @PreAuthorize("hasAuthority('USER_WRITE')")
-    public void changePassword(@Valid @RequestBody UserPasswordDto userPasswordDto) {
-        userService.changePassword(userPasswordDto);
+    public void changePassword( @RequestBody String password) {
+        userService.changePassword(password);
     }
+
+    @PutMapping("/{username}/password")
+    public void resetPassword(@PathVariable String username) {
+        userService.resetPassword(username);
+    }
+
+
 }

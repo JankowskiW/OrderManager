@@ -14,7 +14,6 @@ import pl.wj.ordermanager.exception.ResourceExistsException;
 import pl.wj.ordermanager.exception.ResourceNotFoundException;
 import pl.wj.ordermanager.user.model.User;
 import pl.wj.ordermanager.user.model.UserMapper;
-import pl.wj.ordermanager.user.model.dto.UserPasswordDto;
 import pl.wj.ordermanager.user.model.dto.UserRequestDto;
 import pl.wj.ordermanager.user.model.dto.UserResponseDto;
 import pl.wj.ordermanager.user.model.dto.UserUpdateRequestDto;
@@ -87,11 +86,16 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
     }
 
-    public void changePassword(UserPasswordDto userPasswordDto) {
+    public void changePassword(String password) {
         long loggedInUserId = getLoggedInUserId();
+        System.out.println(loggedInUserId);
         User user = userRepository.findById(loggedInUserId)
                 .orElseThrow(() -> new ResourceNotFoundException("user"));
-        user.setPassword(passwordEncoder.encode(userPasswordDto.getPassword()));
+        user.setPassword(passwordEncoder.encode(password));
         userRepository.save(user);
+    }
+
+    public void resetPassword(String username) {
+        throw new NotYetImplementedException();
     }
 }
