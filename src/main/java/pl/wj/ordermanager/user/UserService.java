@@ -2,6 +2,7 @@ package pl.wj.ordermanager.user;
 
 import lombok.AllArgsConstructor;
 import org.hibernate.cfg.NotYetImplementedException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,21 +11,49 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pl.wj.ordermanager.confirmationtoken.ConfirmationTokenService;
+import pl.wj.ordermanager.confirmationtoken.model.ConfirmationToken;
+import pl.wj.ordermanager.email.EmailSender;
+import pl.wj.ordermanager.email.EmailService;
 import pl.wj.ordermanager.exception.ResourceExistsException;
 import pl.wj.ordermanager.exception.ResourceNotFoundException;
 import pl.wj.ordermanager.user.model.User;
 import pl.wj.ordermanager.user.model.UserMapper;
+import pl.wj.ordermanager.user.model.dto.UserPasswordDto;
 import pl.wj.ordermanager.user.model.dto.UserRequestDto;
 import pl.wj.ordermanager.user.model.dto.UserResponseDto;
 import pl.wj.ordermanager.user.model.dto.UserUpdateRequestDto;
 
+import javax.annotation.Resource;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 @Service
-@AllArgsConstructor
 public class UserService implements UserDetailsService {
 
+    private final ConfirmationTokenService confirmationTokenService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailSender emailSender;
     private final UserMapper userMapper;
+    private final long confirmationTokenExpirationTime;
+    private final String senderEmailAddress;
+
+    public UserService(ConfirmationTokenService confirmationTokenService,
+                       UserRepository userRepository,
+                       PasswordEncoder passwordEncoder,
+                       EmailSender emailSender,
+                       UserMapper userMapper,
+                       @Value("${confirmation-token.password-reset.expiration-time}") long confirmationTokenExpirationTime,
+                       @Value("${spring.mail.username}") String senderEmailAddress) {
+        this.confirmationTokenService = confirmationTokenService;
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.emailSender = emailSender;
+        this.userMapper = userMapper;
+        this.confirmationTokenExpirationTime = confirmationTokenExpirationTime;
+        this.senderEmailAddress = senderEmailAddress;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username)  {
@@ -32,7 +61,7 @@ public class UserService implements UserDetailsService {
     }
 
     public User getUserByUsername(String username)  {
-        return userRepository.getByUsername(username)
+        return userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found in the database"));
     }
 
@@ -86,16 +115,37 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
     }
 
-    public void changePassword(String password) {
+    public void changePassword(UserPasswordDto userPasswordDto) {
         long loggedInUserId = getLoggedInUserId();
-        System.out.println(loggedInUserId);
         User user = userRepository.findById(loggedInUserId)
                 .orElseThrow(() -> new ResourceNotFoundException("user"));
-        user.setPassword(passwordEncoder.encode(password));
+        user.setPassword(passwordEncoder.encode(userPasswordDto.getPassword()));
         userRepository.save(user);
     }
 
-    public void resetPassword(String username) {
-        throw new NotYetImplementedException();
+    @Transactional
+    public void sendPasswordResetConfirmationToken(String emailAddress) {
+        User user = userRepository.findByEmailAddress(emailAddress)
+                .orElseThrow(() -> new ResourceNotFoundException("user"));
+        String confirmationToken = createNewConfirmationToken(user);
+        sendPasswordResetConfirmationMessage(user, confirmationToken);
+    }
+
+    private String createNewConfirmationToken(User user) {
+        ConfirmationToken confirmationToken = new ConfirmationToken(
+                UUID.randomUUID().toString(),
+                LocalDateTime.now(),
+                LocalDateTime.now().plusMinutes(confirmationTokenExpirationTime),
+                user
+        );
+        return confirmationTokenService.addConfirmationToken(confirmationToken).getToken();
+    }
+
+
+    private void sendPasswordResetConfirmationMessage(User user, String confirmationToken) {
+        String subject = "Company - Email confirmation";
+        String confirmationLink = "http://localhost:8080/api/registration/confirm?token=" + confirmationToken;
+        emailSender.sendRegistrationConfirmationToken(senderEmailAddress, user.getEmailAddress(), subject,
+                user.getUsername(), confirmationLink, confirmationTokenExpirationTime);
     }
 }

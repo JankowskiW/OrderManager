@@ -19,23 +19,39 @@ public class EmailService implements EmailSender {
     private final TemplateEngine templateEngine;
 
     @Override
+    public void sendRegistrationConfirmationToken(String from, String to, String subject, String username, String confirmationLink, long tokenExpirationTime) {
+        String content = prepareRegistrationConfirmationEmailContent(username, confirmationLink, tokenExpirationTime);
+        send(from, to, subject, content);
+    }
+    private String prepareRegistrationConfirmationEmailContent(String username, String confirmationLink, long tokenExpirationTime) {
+        Context context = new Context();
+        context.setVariable("username", username);
+        context.setVariable("confirmationlink", confirmationLink);
+        context.setVariable("exptime", tokenExpirationTime);
+        return templateEngine.process("registerconfirmemailtemplate", context);
+    }
+
+    @Override
+    public void sendPasswordResetConfirmationToken(String from, String to, String subject, String confirmationLink, long tokenExpirationTime) {
+        String content = preparePasswordResetConfirmationEmailContent(confirmationLink, tokenExpirationTime);
+        send(from,to, subject, content);
+    }
+
+    private String preparePasswordResetConfirmationEmailContent(String confirmationLink, long tokenExpirationTime) {
+        Context context = new Context();
+        context.setVariable("confirmationlink", confirmationLink);
+        context.setVariable("exptime", tokenExpirationTime);
+        return templateEngine.process("passwordresetconfirmemailtemplate", context);
+    }
+
     @Async
-    public void send(String from, String to, String subject, String username, String confirmationLink, long tokenExpirationTime) {
+    void send(String from, String to, String subject, String content) {
         try {
-            String content = prepareEmailContent(username, confirmationLink, tokenExpirationTime);
             MimeMessage mimeMessage = prepareMimeMessage(content, to, subject, from);
             mailSender.send(mimeMessage);
         } catch (MessagingException e) {
             throw new IllegalStateException("Failed to send email");
         }
-    }
-
-    private String prepareEmailContent(String username, String confirmationLink, long tokenExpirationTime) {
-        Context context = new Context();
-        context.setVariable("username", username);
-        context.setVariable("confirmationlink", confirmationLink);
-        context.setVariable("exptime", tokenExpirationTime);
-        return templateEngine.process("confirmemailtemplate", context);
     }
 
     private MimeMessage prepareMimeMessage(String content, String to, String subject, String from) throws MessagingException {

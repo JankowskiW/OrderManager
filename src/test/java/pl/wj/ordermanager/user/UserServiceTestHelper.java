@@ -2,6 +2,8 @@ package pl.wj.ordermanager.user;
 
 import org.mapstruct.factory.Mappers;
 import org.springframework.security.core.userdetails.UserDetails;
+import pl.wj.ordermanager.confirmationtoken.ConfirmationTokenServiceTestHelper;
+import pl.wj.ordermanager.confirmationtoken.model.ConfirmationToken;
 import pl.wj.ordermanager.exception.ExceptionHelper;
 import pl.wj.ordermanager.role.model.Role;
 import pl.wj.ordermanager.user.model.User;
@@ -17,9 +19,26 @@ import java.util.List;
 public class UserServiceTestHelper {
 
     private static final long NUMBER_OF_USERS = 10;
+    static final long TOKEN_EXPIRATION_TIME = 5;
+    static final String SENDER_EMAIL_ADDRESS = "example@example.com";
+
+
+    private static String subject = "Company - Reset your password";
+    private static String confirmationLink = "http://localhost:8080/api/user/password?token=";
 
     private static LocalDateTime currentTimestamp = LocalDateTime.now();
     private static UserMapper userMapper = Mappers.getMapper(UserMapper.class);
+
+    private static final long ELAPSED_TIME_SINCE_RECEIVED_EMAIL = 5L;
+
+
+    static String getSubject() { return subject; }
+
+    static String getConfirmationLink() {return confirmationLink;}
+
+    static ConfirmationToken createExampleConfirmationToken() {
+        return ConfirmationTokenServiceTestHelper.createExampleConfirmationToken();
+    }
 
     static String createUserNotFoundMessage() {
         return ExceptionHelper.createResourceNotFoundExceptionMessage("user");

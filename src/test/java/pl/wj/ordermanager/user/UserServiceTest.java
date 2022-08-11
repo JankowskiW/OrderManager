@@ -16,11 +16,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import pl.wj.ordermanager.confirmationtoken.ConfirmationTokenService;
+import pl.wj.ordermanager.confirmationtoken.model.ConfirmationToken;
+import pl.wj.ordermanager.email.EmailSender;
 import pl.wj.ordermanager.exception.ExceptionHelper;
 import pl.wj.ordermanager.exception.ResourceExistsException;
 import pl.wj.ordermanager.exception.ResourceNotFoundException;
 import pl.wj.ordermanager.user.model.User;
 import pl.wj.ordermanager.user.model.UserMapper;
+import pl.wj.ordermanager.user.model.dto.UserPasswordDto;
 import pl.wj.ordermanager.user.model.dto.UserRequestDto;
 import pl.wj.ordermanager.user.model.dto.UserResponseDto;
 import pl.wj.ordermanager.user.model.dto.UserUpdateRequestDto;
@@ -35,12 +39,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static pl.wj.ordermanager.exception.ExceptionHelper.createResourceNotFoundExceptionMessage;
+import static pl.wj.ordermanager.registration.RegistrationServiceTestHelper.*;
 import static pl.wj.ordermanager.user.UserServiceTestHelper.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
+    @Mock
+    private ConfirmationTokenService confirmationTokenService;
+    @Mock
+    private EmailSender emailSender;
     @Mock
     private UserRepository userRepository;
     @Mock
@@ -63,7 +74,7 @@ class UserServiceTest {
     void shouldReturnUserDetails() {
         // given
         User user = createExampleUser(true, 1L);
-        given(userRepository.getByUsername(anyString())).willReturn(Optional.of(user));
+        given(userRepository.findByUsername(anyString())).willReturn(Optional.of(user));
 
         // when
         UserDetails userDetails = userService.loadUserByUsername(user.getUsername());
@@ -79,7 +90,7 @@ class UserServiceTest {
     @DisplayName("Should throw UsernameNotFoundException when user does not exist")
     void shouldThrowExceptionWhenUserDoesNotExist() {
         // given
-        given(userRepository.getByUsername(anyString())).willReturn(Optional.empty());
+        given(userRepository.findByUsername(anyString())).willReturn(Optional.empty());
 
         // when
         assertThatThrownBy(() -> userService.loadUserByUsername("johndoe"))
@@ -446,8 +457,9 @@ class UserServiceTest {
     void shouldChangeUserPassword() {
         // given
         long loggedInUserId = 1L;
-        String password = "NewPassword";
-        String encodedPassword = "Encoded"+password;
+        UserPasswordDto userPasswordDto = new UserPasswordDto();
+        userPasswordDto.setPassword("NewPassword");
+        String encodedPassword = "Encoded"+userPasswordDto.getPassword();
         User user = createExampleUser(false, loggedInUserId);
         user.setPassword(encodedPassword);
         given(userRepository.getLoggedInUserId()).willReturn(Optional.of(loggedInUserId));
@@ -462,7 +474,7 @@ class UserServiceTest {
                 });
 
         // when
-        userService.changePassword(password);
+        userService.changePassword(userPasswordDto);
 
         // then
         verify(userRepository).save(user);
@@ -478,7 +490,7 @@ class UserServiceTest {
         given(userRepository.getLoggedInUserId()).willReturn(Optional.empty());
 
         // when
-        assertThatThrownBy(() -> userService.changePassword("NewPassword"))
+        assertThatThrownBy(() -> userService.changePassword(new UserPasswordDto()))
                 .isInstanceOf(UsernameNotFoundException.class)
                 .hasMessage("User not found in the database");
     }
@@ -492,10 +504,37 @@ class UserServiceTest {
         given(userRepository.findById(anyLong())).willReturn(Optional.empty());
 
         // when
-        assertThatThrownBy(() -> userService.changePassword("NewPassword"))
+        assertThatThrownBy(() -> userService.changePassword(new UserPasswordDto()))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage(createResourceNotFoundExceptionMessage("user"));
+    }
 
+    @Test
+    @DisplayName("Should send confirmation token")
+    void shouldSendConfirmationToken() {
+        // given
+        String emailAddress = "example@example.com";
+        long userId = 1L;
+        long tokenId = 1L;
+        User user = createExampleUser(false, userId);
+        given(userRepository.findByEmailAddress(emailAddress)).willReturn(Optional.of(user));
+        given(confirmationTokenService.addConfirmationToken(any(ConfirmationToken.class))).willAnswer(
+                i -> {
+                    ConfirmationToken ct = i.getArgument(0, ConfirmationToken.class);
+                    ct.setId(tokenId);
+                    return ct;
+                });
+        willDoNothing().given(emailSender).sendPasswordResetConfirmationToken(
+                anyString(), anyString(), anyString(),
+                anyString(), anyLong());
+
+        // when
+        userService.sendPasswordResetConfirmationToken(emailAddress);
+
+        // then
+        verify(emailSender).sendPasswordResetConfirmationToken(
+                eq(SENDER_EMAIL_ADDRESS), eq(emailAddress), eq(getSubject()),
+                startsWith(getConfirmationLink()), eq(TOKEN_EXPIRATION_TIME));
     }
 
 }

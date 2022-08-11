@@ -29,7 +29,7 @@ public class RegistrationService {
                                UserService userService,
                                EmailSender emailSender,
                                UserMapper userMapper,
-                               @Value("${confirmation-token.expiration-time}") Long confirmationTokenExpirationTime,
+                               @Value("${confirmation-token.register.expiration-time}") Long confirmationTokenExpirationTime,
                                @Value("${spring.mail.username}") String senderEmailAddress) {
         this.confirmationTokenService = confirmationTokenService;
         this.userService = userService;
@@ -60,7 +60,7 @@ public class RegistrationService {
     private void sendVerificationEmailMessage(User user, String confirmationToken) {
         String subject = "Company - Email confirmation";
         String confirmationLink = "http://localhost:8080/api/registration/confirm?token=" + confirmationToken;
-        emailSender.send(senderEmailAddress, user.getEmailAddress(), subject,
+        emailSender.sendRegistrationConfirmationToken(senderEmailAddress, user.getEmailAddress(), subject,
                 user.getUsername(), confirmationLink, confirmationTokenExpirationTime);
     }
 

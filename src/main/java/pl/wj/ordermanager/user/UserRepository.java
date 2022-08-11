@@ -27,7 +27,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u.id FROM User u WHERE u.username = :username")
     Optional<Long> getIdByUsername(String username);
 
-    Optional<User> getByUsername(String username);
+    Optional<User> findByUsername(String username);
 
     @Query("SELECT new pl.wj.ordermanager.user.model.dto.UserResponseDto(" +
             "u.id, u.firstName, u.lastName, u.username, u.emailAddress, u.createdBy, u.createdAt, " +
@@ -42,4 +42,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Page<UserResponseDto> getUsers(Boolean archived, Pageable pageable);
 
     boolean existsByUsernameOrEmailAddress(String username, String emailAddress);
+
+    Optional<User> findByEmailAddress(String emailAddress);
 }

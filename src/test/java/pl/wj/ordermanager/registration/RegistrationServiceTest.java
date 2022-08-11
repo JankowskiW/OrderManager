@@ -65,9 +65,9 @@ class RegistrationServiceTest {
                 i -> {
                     ConfirmationToken ct = i.getArgument(0, ConfirmationToken.class);
                     ct.setId(tokenId);
-                    return  ct;
+                    return ct;
                 });
-        willDoNothing().given(emailSender).send(
+        willDoNothing().given(emailSender).sendRegistrationConfirmationToken(
                 anyString(), anyString(), anyString(),
                 anyString(), anyString(), anyLong());
 
@@ -79,7 +79,7 @@ class RegistrationServiceTest {
                 .isNotNull()
                 .usingRecursiveComparison()
                 .isEqualTo(expectedResponse);
-        verify(emailSender).send(
+        verify(emailSender).sendRegistrationConfirmationToken(
                 eq(SENDER_EMAIL_ADDRESS), eq(user.getEmailAddress()), eq(getSubject()),
                 eq(user.getUsername()), startsWith(getConfirmationLink()), eq(TOKEN_EXPIRATION_TIME));
     }
