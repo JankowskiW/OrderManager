@@ -141,11 +141,10 @@ public class UserService implements UserDetailsService {
         return confirmationTokenService.addConfirmationToken(confirmationToken).getToken();
     }
 
-
     private void sendPasswordResetConfirmationMessage(User user, String confirmationToken) {
-        String subject = "Company - Email confirmation";
-        String confirmationLink = "http://localhost:8080/api/registration/confirm?token=" + confirmationToken;
-        emailSender.sendRegistrationConfirmationToken(senderEmailAddress, user.getEmailAddress(), subject,
-                user.getUsername(), confirmationLink, confirmationTokenExpirationTime);
+        String subject = "Company - Reset your password";
+        String confirmationLink = "http://localhost:8080/api/user/password?token=" + confirmationToken;
+        emailSender.sendPasswordResetConfirmationToken(
+                senderEmailAddress, user.getEmailAddress(), subject, confirmationLink, confirmationTokenExpirationTime);
     }
 }

@@ -27,6 +27,7 @@ import static pl.wj.ordermanager.registration.RegistrationServiceTestHelper.*;
 
 @ExtendWith(MockitoExtension.class)
 class RegistrationServiceTest {
+
     @Mock
     private ConfirmationTokenService confirmationTokenService;
     @Mock
@@ -37,7 +38,7 @@ class RegistrationServiceTest {
     private RegistrationService registrationService;
 
     @BeforeEach
-    void setUp() {
+    void setUpBeforeEach() {
         MockitoAnnotations.openMocks(this);
         registrationService = new RegistrationService(
                 confirmationTokenService,

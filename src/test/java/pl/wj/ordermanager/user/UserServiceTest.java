@@ -1,13 +1,13 @@
 package pl.wj.ordermanager.user;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -41,9 +41,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static pl.wj.ordermanager.exception.ExceptionHelper.createResourceNotFoundExceptionMessage;
-import static pl.wj.ordermanager.registration.RegistrationServiceTestHelper.*;
 import static pl.wj.ordermanager.user.UserServiceTestHelper.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -56,9 +54,7 @@ class UserServiceTest {
     private UserRepository userRepository;
     @Mock
     private PasswordEncoder passwordEncoder;
-    @Spy
-    private static UserMapper userMapper;
-    @InjectMocks
+
     private UserService userService;
 
     private static List<UserResponseDto> allUsers;
@@ -66,7 +62,20 @@ class UserServiceTest {
     @BeforeAll
     static void setUp() {
         allUsers = createListOfUserResponseDtos();
-        userMapper = Mappers.getMapper(UserMapper.class);
+    }
+
+    @BeforeEach
+    void setUpBeforeEach() {
+        MockitoAnnotations.openMocks(this);
+        userService = new UserService(
+                confirmationTokenService,
+                userRepository,
+                passwordEncoder,
+                emailSender,
+                Mappers.getMapper(UserMapper.class),
+                TOKEN_EXPIRATION_TIME,
+                SENDER_EMAIL_ADDRESS
+        );
     }
 
     @Test
@@ -108,7 +117,6 @@ class UserServiceTest {
         expectedUser.setPassword(encodedPassword);
         given(userRepository.existsByUsernameOrEmailAddress(anyString(), anyString())).willReturn(false);
         given(userRepository.getLoggedInUserId()).willReturn(Optional.of(expectedUser.getId()));
-        given(userMapper.userRequestDtoToUser(any(UserRequestDto.class))).willCallRealMethod();
         given(passwordEncoder.encode(anyString())).willReturn(encodedPassword);
         given(userRepository.save(any(User.class))).willAnswer(
                 i -> {
@@ -513,11 +521,10 @@ class UserServiceTest {
     @DisplayName("Should send confirmation token")
     void shouldSendConfirmationToken() {
         // given
-        String emailAddress = "example@example.com";
         long userId = 1L;
         long tokenId = 1L;
         User user = createExampleUser(false, userId);
-        given(userRepository.findByEmailAddress(emailAddress)).willReturn(Optional.of(user));
+        given(userRepository.findByEmailAddress(anyString())).willReturn(Optional.of(user));
         given(confirmationTokenService.addConfirmationToken(any(ConfirmationToken.class))).willAnswer(
                 i -> {
                     ConfirmationToken ct = i.getArgument(0, ConfirmationToken.class);
@@ -529,11 +536,11 @@ class UserServiceTest {
                 anyString(), anyLong());
 
         // when
-        userService.sendPasswordResetConfirmationToken(emailAddress);
+        userService.sendPasswordResetConfirmationToken(user.getEmailAddress());
 
         // then
         verify(emailSender).sendPasswordResetConfirmationToken(
-                eq(SENDER_EMAIL_ADDRESS), eq(emailAddress), eq(getSubject()),
+                eq(SENDER_EMAIL_ADDRESS), eq(user.getEmailAddress()), eq(getSubject()),
                 startsWith(getConfirmationLink()), eq(TOKEN_EXPIRATION_TIME));
     }
 
