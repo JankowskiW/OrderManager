@@ -4,9 +4,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.wj.ordermanager.confirmationtoken.model.ConfirmationToken;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
-
 @Service
 @AllArgsConstructor
 public class ConfirmationTokenService {

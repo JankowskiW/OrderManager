@@ -68,7 +68,7 @@ public class RegistrationService {
     public String confirmEmail(String token) {
         ConfirmationToken confirmationToken = confirmationTokenService.getConfirmationToken(token);
         validateConfirmationToken(confirmationToken);
-        confirmEmailAddress(confirmationToken);
+        confirmRegistration(confirmationToken);
         return "Email address confirmed";
     }
 
@@ -77,7 +77,7 @@ public class RegistrationService {
         if (confirmationToken.getExpiresAt().isBefore(LocalDateTime.now())) throw new RuntimeException("Token expired");
     }
 
-    private void confirmEmailAddress(ConfirmationToken confirmationToken) {
+    private void confirmRegistration(ConfirmationToken confirmationToken) {
         confirmationToken.setConfirmedAt(LocalDateTime.now());
         confirmationTokenService.updateConfirmationToken(confirmationToken);
         userService.enableUser(confirmationToken.getUser());

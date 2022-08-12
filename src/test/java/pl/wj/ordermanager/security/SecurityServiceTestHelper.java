@@ -5,7 +5,6 @@ import pl.wj.ordermanager.user.model.User;
 import pl.wj.ordermanager.util.JwtUtil;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class SecurityServiceTestHelper {
 
