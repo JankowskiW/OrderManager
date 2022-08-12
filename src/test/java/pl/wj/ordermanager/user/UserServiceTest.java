@@ -544,4 +544,16 @@ class UserServiceTest {
                 startsWith(getConfirmationLink()), eq(TOKEN_EXPIRATION_TIME));
     }
 
+    @Test
+    @DisplayName("Should throw ResourceNotFoundException when user not found by email address")
+    void shouldThrowExceptionWhenUserNotFoundByEmailAddress() {
+        // given
+        String emailAddress = "example@example.com";
+        given(userRepository.findByEmailAddress(anyString())).willReturn(Optional.empty());
+
+        // when
+        assertThatThrownBy(() -> userService.sendPasswordResetConfirmationToken(emailAddress))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(createResourceNotFoundExceptionMessage("user"));
+    }
 }
