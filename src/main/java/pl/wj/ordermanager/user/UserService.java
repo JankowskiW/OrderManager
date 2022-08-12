@@ -151,7 +151,7 @@ public class UserService implements UserDetailsService {
     }
 
     private void validateConfirmationToken(ConfirmationToken confirmationToken) throws RuntimeException {
-        if (confirmationToken.getConfirmedAt() != null) throw new RuntimeException("Email already confirmed");
+        if (confirmationToken.getConfirmedAt() != null) throw new RuntimeException("Password already reseted");
         if (confirmationToken.getExpiresAt().isBefore(LocalDateTime.now())) throw new RuntimeException("Token expired");
     }
 

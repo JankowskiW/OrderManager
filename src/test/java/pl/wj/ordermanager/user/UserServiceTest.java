@@ -587,4 +587,30 @@ class UserServiceTest {
         verify(userRepository).save(user);
     }
 
+    @Test
+    @DisplayName("Should throw RuntimeExpception when password already reseted")
+    void shouldThrowExceptionWhenPasswordAlreadyRested() {
+        // given
+        ConfirmationToken confirmationToken = createExampleConfirmationToken(true, false);
+        given(confirmationTokenService.getConfirmationToken(anyString())).willReturn(confirmationToken);
+
+        // when
+        assertThatThrownBy(() -> userService.resetPassword(confirmationToken.getToken()))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessage("Password already reseted");
+    }
+
+    @Test
+    @DisplayName("Should throw RuntimeException when password reset token expired")
+    void shouldThrowExceptionWhenPasswordResetTokenExpired() {
+        // given
+        ConfirmationToken confirmationToken = createExampleConfirmationToken(false, true);
+        given(confirmationTokenService.getConfirmationToken(anyString())).willReturn(confirmationToken);
+
+        // when
+        assertThatThrownBy(() -> userService.resetPassword(confirmationToken.getToken()))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessage("Token expired");
+
+    }
 }
