@@ -91,8 +91,6 @@ class RegistrationServiceTest {
         // given
         ConfirmationToken confirmationToken = createExampleConfirmationToken(false, false);
         ConfirmationToken confirmedConfirmationToken = createExampleConfirmationToken(true, false);
-        System.out.println(confirmationToken.getCreatedAt());
-        System.out.println(confirmedConfirmationToken.getCreatedAt());
         String expectedResponse = "Email address confirmed";
         given(confirmationTokenService.getConfirmationToken(anyString())).willReturn(confirmationToken);
         given(confirmationTokenService.updateConfirmationToken(any(ConfirmationToken.class))).willReturn(confirmedConfirmationToken);

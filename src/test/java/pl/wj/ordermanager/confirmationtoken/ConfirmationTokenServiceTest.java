@@ -59,7 +59,7 @@ class ConfirmationTokenServiceTest {
     void shouldFindByTokenAndReturnConfirmationTokenDetails() {
         // given
         long tokenId = 1L;
-        ConfirmationToken expectedResponse = createExampleConfirmationToken();
+        ConfirmationToken expectedResponse = createExampleConfirmationToken(false, false);
         expectedResponse.setId(tokenId);
         given(confirmationTokenRepository.findByToken(anyString())).willReturn(Optional.of(expectedResponse));
 

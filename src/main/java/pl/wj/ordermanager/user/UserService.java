@@ -147,4 +147,8 @@ public class UserService implements UserDetailsService {
         emailSender.sendPasswordResetConfirmationToken(
                 senderEmailAddress, user.getEmailAddress(), subject, confirmationLink, confirmationTokenExpirationTime);
     }
+
+    public void resetPassword(String token) {
+        throw new NotYetImplementedException();
+    }
 }

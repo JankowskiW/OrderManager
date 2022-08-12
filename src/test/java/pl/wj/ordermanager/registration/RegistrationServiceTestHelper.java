@@ -14,7 +14,6 @@ public class RegistrationServiceTestHelper {
 
     static final long TOKEN_EXPIRATION_TIME = 15;
     static final String SENDER_EMAIL_ADDRESS = "example@example.com";
-    private static final long ELAPSED_TIME_SINCE_RECEIVED_EMAIL = 5L;
 
     private static LocalDateTime currentTimestamp = LocalDateTime.now();
     private static UserMapper userMapper = Mappers.getMapper(UserMapper.class);
@@ -28,19 +27,8 @@ public class RegistrationServiceTestHelper {
     static String getConfirmationLink() {return confirmationLink;}
 
     static ConfirmationToken createExampleConfirmationToken(boolean confirmed, boolean expired) {
-        ConfirmationToken confirmationToken = ConfirmationTokenServiceTestHelper.createExampleConfirmationToken();
-        if (confirmed) makeTokenConfirmed(confirmationToken);
-        if (expired) makeTokenExpired(confirmationToken);
+        ConfirmationToken confirmationToken = ConfirmationTokenServiceTestHelper.createExampleConfirmationToken(confirmed, expired);
         return confirmationToken;
-    }
-
-    private static void makeTokenExpired(ConfirmationToken token) {
-        token.setCreatedAt(token.getCreatedAt().minusMinutes(TOKEN_EXPIRATION_TIME + 1));
-        token.setExpiresAt(token.getExpiresAt().minusMinutes(TOKEN_EXPIRATION_TIME + 1));
-    }
-
-    private static void makeTokenConfirmed(ConfirmationToken token) {
-        token.setConfirmedAt(token.getCreatedAt().plusMinutes(ELAPSED_TIME_SINCE_RECEIVED_EMAIL));
     }
 
     static UserRequestDto createExampleUserRequestDto() {

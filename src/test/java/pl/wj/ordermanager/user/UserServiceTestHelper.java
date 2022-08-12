@@ -15,6 +15,7 @@ import pl.wj.ordermanager.user.model.dto.UserUpdateRequestDto;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class UserServiceTestHelper {
 
@@ -29,15 +30,13 @@ public class UserServiceTestHelper {
     private static LocalDateTime currentTimestamp = LocalDateTime.now();
     private static UserMapper userMapper = Mappers.getMapper(UserMapper.class);
 
-    private static final long ELAPSED_TIME_SINCE_RECEIVED_EMAIL = 5L;
-
 
     static String getSubject() { return subject; }
 
     static String getConfirmationLink() {return confirmationLink;}
 
-    static ConfirmationToken createExampleConfirmationToken() {
-        return ConfirmationTokenServiceTestHelper.createExampleConfirmationToken();
+    static ConfirmationToken createExampleConfirmationToken(boolean confirmed, boolean expired) {
+        return ConfirmationTokenServiceTestHelper.createExampleConfirmationToken(confirmed, expired);
     }
 
     static String createUserNotFoundMessage() {
