@@ -135,7 +135,7 @@ public class UserService implements UserDetailsService {
 
     private void sendPasswordResetConfirmationMessage(User user, String confirmationToken) {
         String subject = "Company - Reset your password";
-        String confirmationLink = "http://localhost:8080/api/user/password?token=" + confirmationToken;
+        String confirmationLink = "http://localhost:8080/api/users/password?token=" + confirmationToken;
         emailSender.sendPasswordResetConfirmationToken(
                 senderEmailAddress, user.getEmailAddress(), subject, confirmationLink, confirmationTokenExpirationTime);
     }
