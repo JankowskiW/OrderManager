@@ -116,7 +116,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public void sendPasswordResetConfirmationToken(String emailAddress) {
+    public void sendPasswordResetRequest(String emailAddress) {
         User user = userRepository.findByEmailAddress(emailAddress)
                 .orElseThrow(() -> new ResourceNotFoundException("user"));
         String confirmationToken = createNewConfirmationToken(user);
@@ -137,7 +137,7 @@ public class UserService implements UserDetailsService {
         String subject = "Company - Reset your password";
         String confirmationLink = "http://localhost:8080/api/users/password?token=" + confirmationToken;
         emailSender.sendPasswordResetConfirmationToken(
-                senderEmailAddress, user.getEmailAddress(), subject, confirmationLink, confirmationTokenExpirationTime);
+               senderEmailAddress, user.getEmailAddress(), subject, confirmationLink, confirmationTokenExpirationTime);
     }
 
     @Transactional

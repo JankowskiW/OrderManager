@@ -23,14 +23,16 @@ public class UserServiceTestHelper {
     static final String SENDER_EMAIL_ADDRESS = "example@example.com";
 
 
-    private static String subject = "Company - Reset your password";
-    private static String confirmationLink = "http://localhost:8080/api/user/password?token=";
+    private static String subjectPasswordReset = "Company - Reset your password";
+    private static String subjectNewPassword = "Company - New password";
+    private static String confirmationLink = "http://localhost:8080/api/users/password?token=";
 
     private static LocalDateTime currentTimestamp = LocalDateTime.now();
     private static UserMapper userMapper = Mappers.getMapper(UserMapper.class);
 
 
-    static String getSubject() { return subject; }
+    static String getSubjectPasswordReset() { return subjectPasswordReset; }
+    static String getSubjectNewPassword() { return subjectNewPassword; }
 
     static String getConfirmationLink() {return confirmationLink;}
 

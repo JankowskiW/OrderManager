@@ -38,8 +38,8 @@ public class UserController {
     }
 
     @PutMapping("/{emailAddress}/password")
-    public void sendResetPasswordConfirmationEmail(@PathVariable String emailAddress) {
-        userService.sendPasswordResetConfirmationToken(emailAddress);
+    public void sendPasswordResetRequest(@PathVariable String emailAddress) {
+        userService.sendPasswordResetRequest(emailAddress);
     }
 
     @GetMapping("/password")
