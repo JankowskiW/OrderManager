@@ -237,10 +237,10 @@ class UserServiceTest {
         int pageSize = 4;
         int firstElementIndex = pageNumber * pageSize;
         int lastElementIndex = (pageNumber + 1) * pageSize;
-        List<UserResponseDto> onePageOfAllUser =
+        List<UserResponseDto> onePageOfAllUsers =
                 allUsers.subList(firstElementIndex, lastElementIndex);
         given(userRepository.getUsers(any(Pageable.class)))
-                .willReturn(new PageImpl<>(onePageOfAllUser));
+                .willReturn(new PageImpl<>(onePageOfAllUsers));
 
         // when
         Page<UserResponseDto> responseUsers =
@@ -251,7 +251,7 @@ class UserServiceTest {
                 .isNotNull()
                 .hasSize(pageSize)
                 .usingRecursiveFieldByFieldElementComparator()
-                .isEqualTo(onePageOfAllUser);
+                .isEqualTo(onePageOfAllUsers);
     }
 
     @Test
@@ -263,10 +263,10 @@ class UserServiceTest {
         int firstElementIndex = pageNumber * pageSize;
         int lastElementIndex = allUsers.size();
         int expectedSize = allUsers.size() - (pageNumber * pageSize);
-        List<UserResponseDto> lastPageOfAllUser =
+        List<UserResponseDto> lastPageOfAllUsers =
                 allUsers.subList(firstElementIndex, lastElementIndex);
         given(userRepository.getUsers(any(Pageable.class)))
-                .willReturn(new PageImpl<>(lastPageOfAllUser));
+                .willReturn(new PageImpl<>(lastPageOfAllUsers));
 
         // when
         Page<UserResponseDto> responseUsers =
@@ -277,7 +277,7 @@ class UserServiceTest {
                 .isNotNull()
                 .hasSize(expectedSize)
                 .usingRecursiveFieldByFieldElementComparator()
-                .isEqualTo(lastPageOfAllUser);
+                .isEqualTo(lastPageOfAllUsers);
     }
 
     @Test
@@ -287,7 +287,6 @@ class UserServiceTest {
         int pageNumber = 100;
         int pageSize = 4;
         int expectedSize = 0;
-        boolean archived = true;
         given(userRepository.getUsers(any(Pageable.class)))
                 .willReturn(new PageImpl<>(new ArrayList<>()));
 

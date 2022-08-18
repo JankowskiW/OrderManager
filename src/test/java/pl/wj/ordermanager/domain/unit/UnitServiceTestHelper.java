@@ -11,7 +11,6 @@ public class UnitServiceTestHelper {
     private static final List<Unit> units = new ArrayList<>();
 
     static {
-        List<Unit> units = new ArrayList<>();
         units.add(new Unit(1L, "kg", "kilogram"));
         units.add(new Unit(2L, "g", "gram"));
         units.add(new Unit(3L, "m", "meter"));
