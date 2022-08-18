@@ -8,14 +8,14 @@ public class ExceptionHelper {
 
     public static String createResourceExistsExceptionMessage(String resource) {
         if (resource.isEmpty()) return "Resource already exists";
-        return String.format("$s%s already exists", capitalizeFirstLetter(resource));
+        return String.format("%s already exists", capitalizeFirstLetter(resource));
     }
 
     public static String createResourceExistsExceptionMessage(String resource, String violationFields) {
         if (resource.isEmpty()) return "Resource already exists";
         if (violationFields.isEmpty()) return createResourceExistsExceptionMessage(resource);
         violationFields = violationFields.trim().toLowerCase();
-        return String.format("$s%s with given %s already exists", capitalizeFirstLetter(resource), violationFields);
+        return String.format("%s with given %s already exists", capitalizeFirstLetter(resource), violationFields);
     }
 
     private static String capitalizeFirstLetter(String word) {
