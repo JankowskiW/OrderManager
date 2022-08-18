@@ -230,7 +230,7 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("Should return just one but not last page of users")
+    @DisplayName("Should return just one but not last page of all users")
     void shouldReturnJustOneButNotLastPageOfAllUsers() {
         // given
         int pageNumber = 0;
@@ -255,7 +255,7 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("Should return just last page of users")
+    @DisplayName("Should return just last page of all users")
     void shouldReturnJustLastPageOfAllUsers() {
         // given
         int pageNumber = 2;

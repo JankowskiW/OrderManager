@@ -34,7 +34,6 @@ class ProductServiceTest {
         int pageNumber = 0;
         int pageSize = 4;
         int firstElementIndex = pageNumber * pageSize;
-        int lastElementIndex = (pageNumber + 1) * pageSize;
         List<ProductResponseDto> onePageOfProducts =
                 getExampleListOfProductResponseDto().stream()
                         .skip(firstElementIndex)
@@ -53,5 +52,30 @@ class ProductServiceTest {
                 .usingRecursiveFieldByFieldElementComparator()
                 .isEqualTo(onePageOfProducts);
     }
-    
+
+    @Test
+    @DisplayName("Should return just last page of products")
+    void shouldReturnJustLastPageOfProducts() {
+        // given
+        int pageNumber = 2;
+        int pageSize = 4;
+        int firstElementIndex = pageNumber * pageSize;
+        int expectedSize = getExampleListOfProductResponseDto().size() - pageNumber * pageSize;
+        List<ProductResponseDto> lastPageOfProducts =
+                getExampleListOfProductResponseDto().stream()
+                        .skip(firstElementIndex)
+                        .limit(pageSize)
+                        .collect(Collectors.toList());
+
+        // when
+        Page<ProductResponseDto> responseProducts = productService.getProducts(PageRequest.of(pageNumber, pageSize));
+
+        // then
+        assertThat(responseProducts)
+                .isNotNull()
+                .hasSize(expectedSize)
+                .usingRecursiveFieldByFieldElementComparator()
+                .isEqualTo(lastPageOfProducts);
+    }
+
 }
