@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.wj.ordermanager.domain.unit.model.Unit;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,6 +37,21 @@ class UnitServiceTest {
                 .hasSize(UnitServiceTestHelper.createExampleListOfUnits().size())
                 .usingRecursiveFieldByFieldElementComparator()
                 .isEqualTo(UnitServiceTestHelper.createExampleListOfUnits());
+    }
+
+    @Test
+    @DisplayName("Should return empty list of units")
+    void shouldReturnEmptyListOfUnits() {
+        // given
+        given(unitRepository.findAll()).willReturn(new ArrayList<>());
+
+        // when
+        List<Unit> responseUnits = unitService.getUnits();
+
+        // then
+        assertThat(responseUnits)
+                .isNotNull()
+                .hasSize(0);
     }
 
 }
