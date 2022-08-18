@@ -1,10 +1,9 @@
 package pl.wj.ordermanager.domain.unit;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import pl.wj.ordermanager.domain.unit.model.Unit;
+import pl.wj.ordermanager.domain.unit.model.dto.UnitRequestDto;
 
 import java.util.List;
 
@@ -17,5 +16,10 @@ public class UnitController {
     @GetMapping
     public List<Unit> getUnits() {
         return unitService.getUnits();
+    }
+
+    @PostMapping
+    public Unit addUnit(@RequestBody UnitRequestDto unitRequestDto) {
+        return unitService.addUnit(unitRequestDto);
     }
 }
