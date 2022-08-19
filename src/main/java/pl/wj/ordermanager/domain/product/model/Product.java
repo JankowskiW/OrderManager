@@ -5,6 +5,7 @@ import pl.wj.ordermanager.domain.unit.model.Unit;
 import pl.wj.ordermanager.role.model.Role;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -23,7 +24,7 @@ public class Product {
     private String name;
     private String SKU;
     private String EAN;
-    private double quantity;
+    private BigDecimal quantity;
     private String description;
     private long createdBy;
     private LocalDateTime createdAt;

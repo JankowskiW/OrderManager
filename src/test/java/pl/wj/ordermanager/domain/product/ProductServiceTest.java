@@ -9,16 +9,20 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import pl.wj.ordermanager.domain.product.model.Product;
+import pl.wj.ordermanager.domain.product.model.dto.ProductRequestDto;
 import pl.wj.ordermanager.domain.product.model.dto.ProductResponseDto;
 
-import java.awt.print.Pageable;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static pl.wj.ordermanager.domain.product.ProductServiceTestHelper.getExampleListOfProductResponseDto;
+import static pl.wj.ordermanager.domain.product.ProductServiceTestHelper.*;
+
 
 @ExtendWith(MockitoExtension.class)
 class ProductServiceTest {
@@ -39,7 +43,7 @@ class ProductServiceTest {
                         .skip(firstElementIndex)
                         .limit(pageSize)
                         .collect(Collectors.toList());
-        given(productRepository.findProducts(any(Pageable.class))).willReturn(new PageImpl<>(onePageOfProducts));
+        given(productRepository.getProducts(any(Pageable.class))).willReturn(new PageImpl<>(onePageOfProducts));
 
         // when
         Page<ProductResponseDto> responseProducts =
@@ -66,6 +70,7 @@ class ProductServiceTest {
                         .skip(firstElementIndex)
                         .limit(pageSize)
                         .collect(Collectors.toList());
+        given(productRepository.getProducts(any(Pageable.class))).willReturn(new PageImpl<>(lastPageOfProducts));
 
         // when
         Page<ProductResponseDto> responseProducts = productService.getProducts(PageRequest.of(pageNumber, pageSize));
@@ -76,6 +81,33 @@ class ProductServiceTest {
                 .hasSize(expectedSize)
                 .usingRecursiveFieldByFieldElementComparator()
                 .isEqualTo(lastPageOfProducts);
+    }
+
+    @Test
+    @DisplayName("Should add new product")
+    void shouldAddNewProduct() {
+        // given
+        long id = 1L;
+        ProductRequestDto productRequestDto = createExampleProductRequestDto();
+        ProductResponseDto expectedResponseDto = createExampleProductResponseDto(id, productRequestDto);
+        given(productRepository.existsByNameAndSKU(anyString(), anyString())).willReturn(false);
+        given(productRepository.save(any(Product.class))).willAnswer(
+                i -> {
+                    Product p = i.getArgument(0, Product.class);
+                    p.setId(id);
+                    p.setCreatedAt(getCurrentTimestamp());
+                    p.setUpdatedAt(getCurrentTimestamp());
+                    return p;
+                });
+
+        // when
+        ProductResponseDto responseProduct = productService.addProduct(productRequestDto);
+
+        // then
+        assertThat(responseProduct)
+                .isNotNull()
+                .usingRecursiveComparison()
+                .isEqualTo(expectedResponseDto);
     }
 
 }
