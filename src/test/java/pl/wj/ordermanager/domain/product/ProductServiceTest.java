@@ -13,15 +13,18 @@ import org.springframework.data.domain.Pageable;
 import pl.wj.ordermanager.domain.product.model.Product;
 import pl.wj.ordermanager.domain.product.model.dto.ProductRequestDto;
 import pl.wj.ordermanager.domain.product.model.dto.ProductResponseDto;
+import pl.wj.ordermanager.exception.ResourceExistsException;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static pl.wj.ordermanager.domain.product.ProductServiceTestHelper.*;
+import static pl.wj.ordermanager.exception.ExceptionHelper.createResourceNotFoundExceptionMessage;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -90,7 +93,7 @@ class ProductServiceTest {
         long id = 1L;
         ProductRequestDto productRequestDto = createExampleProductRequestDto();
         ProductResponseDto expectedResponseDto = createExampleProductResponseDto(id, productRequestDto);
-        given(productRepository.existsByNameAndSKU(anyString(), anyString())).willReturn(false);
+        given(productRepository.existsByNameOrSKU(anyString(), anyString())).willReturn(false);
         given(productRepository.save(any(Product.class))).willAnswer(
                 i -> {
                     Product p = i.getArgument(0, Product.class);
@@ -108,6 +111,18 @@ class ProductServiceTest {
                 .isNotNull()
                 .usingRecursiveComparison()
                 .isEqualTo(expectedResponseDto);
+    }
+
+    @Test
+    @DisplayName("Should throw ResourceExistsException when product name or sku already exists in database")
+    void shouldThrowExceptionWhenProductNameOrSkuAlreadyExists() {
+        // given
+        given(productRepository.existsByNameOrSKU(anyString(), anyString())).willReturn(false);
+
+        // when
+        assertThatThrownBy(() -> productService.addProduct(createExampleProductRequestDto()))
+                .isInstanceOf(ResourceExistsException.class)
+                .hasMessage(createResourceNotFoundExceptionMessage("product"));
     }
 
 }
