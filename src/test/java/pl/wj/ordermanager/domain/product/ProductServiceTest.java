@@ -1,21 +1,29 @@
 package pl.wj.ordermanager.domain.product;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import pl.wj.ordermanager.domain.product.model.Product;
+import pl.wj.ordermanager.domain.product.model.ProductMapper;
 import pl.wj.ordermanager.domain.product.model.dto.ProductRequestDto;
 import pl.wj.ordermanager.domain.product.model.dto.ProductResponseDto;
 import pl.wj.ordermanager.exception.ResourceExistsException;
+import pl.wj.ordermanager.user.UserRepository;
+import pl.wj.ordermanager.user.UserService;
+import pl.wj.ordermanager.user.model.UserMapper;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,15 +32,27 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static pl.wj.ordermanager.domain.product.ProductServiceTestHelper.*;
-import static pl.wj.ordermanager.exception.ExceptionHelper.createResourceNotFoundExceptionMessage;
+import static pl.wj.ordermanager.exception.ExceptionHelper.createResourceExistsExceptionMessage;
 
 
 @ExtendWith(MockitoExtension.class)
 class ProductServiceTest {
     @Mock
     private ProductRepository productRepository;
-    @InjectMocks
+    @Mock
+    private UserRepository userRepository;
+
     private ProductService productService;
+
+    @BeforeEach
+    void setUpBeforeEach() {
+        MockitoAnnotations.openMocks(this);
+        productService = new ProductService(
+                productRepository,
+                userRepository,
+                Mappers.getMapper(ProductMapper.class)
+        );
+    }
 
     @Test
     @DisplayName("Should return only one page of products")
@@ -91,9 +111,11 @@ class ProductServiceTest {
     void shouldAddNewProduct() {
         // given
         long id = 1L;
+        long loggedInUserId = 1L;
         ProductRequestDto productRequestDto = createExampleProductRequestDto();
         ProductResponseDto expectedResponseDto = createExampleProductResponseDto(id, productRequestDto);
         given(productRepository.existsByNameOrSKU(anyString(), anyString())).willReturn(false);
+        given(userRepository.getLoggedInUserId()).willReturn(Optional.of(loggedInUserId));
         given(productRepository.save(any(Product.class))).willAnswer(
                 i -> {
                     Product p = i.getArgument(0, Product.class);
@@ -117,12 +139,12 @@ class ProductServiceTest {
     @DisplayName("Should throw ResourceExistsException when product name or sku already exists in database")
     void shouldThrowExceptionWhenProductNameOrSkuAlreadyExists() {
         // given
-        given(productRepository.existsByNameOrSKU(anyString(), anyString())).willReturn(false);
+        given(productRepository.existsByNameOrSKU(anyString(), anyString())).willReturn(true);
 
         // when
         assertThatThrownBy(() -> productService.addProduct(createExampleProductRequestDto()))
                 .isInstanceOf(ResourceExistsException.class)
-                .hasMessage(createResourceNotFoundExceptionMessage("product"));
+                .hasMessage(createResourceExistsExceptionMessage("product", "name or SKU"));
     }
 
 }

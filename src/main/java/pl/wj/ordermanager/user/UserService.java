@@ -66,8 +66,7 @@ public class UserService implements UserDetailsService {
         if(userRepository.existsByUsernameOrEmailAddress(userRequestDto.getUsername(), userRequestDto.getEmailAddress())) {
             throw new ResourceExistsException("user", "username or email address");
         }
-        long loggedInUserId = getLoggedInUserId();
-        User user = mapUserRequestDtoWithAuditFieldsToUser(userRequestDto, loggedInUserId);
+        User user = mapUserRequestDtoWithAuditFieldsToUser(userRequestDto, getLoggedInUserId());
         encodeUserPassword(user);
         return userRepository.save(user);
     }
