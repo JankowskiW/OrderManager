@@ -9,6 +9,5 @@ import lombok.Setter;
 @NoArgsConstructor
 public class UserPasswordDto{
     private String password;
-
 }
 

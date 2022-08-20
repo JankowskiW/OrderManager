@@ -32,6 +32,8 @@ public class Product {
     private LocalDateTime updatedAt;
     private long archivedBy;
     private LocalDateTime archivedAt;
+    @Version
+    private long version;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(

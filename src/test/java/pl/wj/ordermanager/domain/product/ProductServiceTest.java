@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import pl.wj.ordermanager.domain.product.model.Product;
 import pl.wj.ordermanager.domain.product.model.ProductMapper;
+import pl.wj.ordermanager.domain.product.model.dto.ProductQtyDto;
 import pl.wj.ordermanager.domain.product.model.dto.ProductRequestDto;
 import pl.wj.ordermanager.domain.product.model.dto.ProductResponseDto;
 import pl.wj.ordermanager.exception.ResourceExistsException;
@@ -22,6 +23,7 @@ import pl.wj.ordermanager.user.UserRepository;
 import pl.wj.ordermanager.user.UserService;
 import pl.wj.ordermanager.user.model.UserMapper;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -69,11 +71,11 @@ class ProductServiceTest {
         given(productRepository.getProducts(any(Pageable.class))).willReturn(new PageImpl<>(onePageOfProducts));
 
         // when
-        Page<ProductResponseDto> responseProducts =
+        Page<ProductResponseDto> productResponseDtos =
                 productService.getProducts(PageRequest.of(pageNumber, pageSize));
 
         // then
-        assertThat(responseProducts)
+        assertThat(productResponseDtos)
                 .isNotNull()
                 .hasSize(pageSize)
                 .usingRecursiveFieldByFieldElementComparator()
@@ -96,10 +98,10 @@ class ProductServiceTest {
         given(productRepository.getProducts(any(Pageable.class))).willReturn(new PageImpl<>(lastPageOfProducts));
 
         // when
-        Page<ProductResponseDto> responseProducts = productService.getProducts(PageRequest.of(pageNumber, pageSize));
+        Page<ProductResponseDto> productResponseDtos = productService.getProducts(PageRequest.of(pageNumber, pageSize));
 
         // then
-        assertThat(responseProducts)
+        assertThat(productResponseDtos)
                 .isNotNull()
                 .hasSize(expectedSize)
                 .usingRecursiveFieldByFieldElementComparator()
@@ -122,14 +124,15 @@ class ProductServiceTest {
                     p.setId(id);
                     p.setCreatedAt(getCurrentTimestamp());
                     p.setUpdatedAt(getCurrentTimestamp());
+                    p.setVersion(1L);
                     return p;
                 });
 
         // when
-        ProductResponseDto responseProduct = productService.addProduct(productRequestDto);
+        ProductResponseDto productResponseDto = productService.addProduct(productRequestDto);
 
         // then
-        assertThat(responseProduct)
+        assertThat(productResponseDto)
                 .isNotNull()
                 .usingRecursiveComparison()
                 .isEqualTo(expectedResponseDto);
@@ -145,6 +148,34 @@ class ProductServiceTest {
         assertThatThrownBy(() -> productService.addProduct(createExampleProductRequestDto()))
                 .isInstanceOf(ResourceExistsException.class)
                 .hasMessage(createResourceExistsExceptionMessage("product", "name or SKU"));
+    }
+
+    @Test
+    @DisplayName("Should update product quantity")
+    void shouldUpdateProductQuantity() {
+        // given
+        long id = 1L;
+        ProductQtyDto productQtyDto = new ProductQtyDto(new BigDecimal(100));
+        ProductResponseDto expectedResponse = getExampleProductResponseDto();
+        expectedResponse.setQuantity(productQtyDto.getQuantity());
+        Product product = createExampleProduct(id);
+        given(productRepository.findById(id)).willReturn(Optional.of(product));
+        given(productRepository.save(any(Product.class))).willAnswer(
+                i -> {
+                    Product p = i.getArgument(0, Product.class);
+                    p.setUpdatedAt(getCurrentTimestamp().plusDays(10));
+                    p.setVersion(product.getVersion() + 1);
+                    return p;
+                });
+
+        // when
+        ProductResponseDto productResponseDto = productService.updateProductQuantity(id, productQtyDto);
+
+        // then
+        assertThat(productResponseDto)
+                .isNotNull()
+                .usingRecursiveComparison()
+                .isEqualTo(expectedResponse);
     }
 
 }

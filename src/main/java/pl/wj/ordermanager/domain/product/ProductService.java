@@ -1,12 +1,14 @@
 package pl.wj.ordermanager.domain.product;
 
 import lombok.RequiredArgsConstructor;
+import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import pl.wj.ordermanager.domain.product.model.Product;
 import pl.wj.ordermanager.domain.product.model.ProductMapper;
+import pl.wj.ordermanager.domain.product.model.dto.ProductQtyDto;
 import pl.wj.ordermanager.domain.product.model.dto.ProductRequestDto;
 import pl.wj.ordermanager.domain.product.model.dto.ProductResponseDto;
 import pl.wj.ordermanager.exception.ResourceExistsException;
@@ -24,7 +26,6 @@ public class ProductService {
     }
 
     public ProductResponseDto addProduct(ProductRequestDto productRequestDto) {
-        System.out.println(productRequestDto.getName());
         if (productRepository.existsByNameOrSKU(productRequestDto.getName(), productRequestDto.getSKU())) {
             throw new ResourceExistsException("product", "name or SKU");
         }
@@ -44,4 +45,7 @@ public class ProductService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found in the database"));
     }
 
+    public ProductResponseDto updateProductQuantity(long id, ProductQtyDto productQtyDto) {
+        throw new NotYetImplementedException();
+    }
 }

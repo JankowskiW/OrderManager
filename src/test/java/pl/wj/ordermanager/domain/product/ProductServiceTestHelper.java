@@ -25,9 +25,13 @@ public class ProductServiceTestHelper {
                         .id(i)
                         .name("Steel Sheet " + i * 50)
                         .SKU("ST" + i * 50)
-                        .quantity(new BigDecimal(i*10.5))
+                        .quantity(new BigDecimal(i*10))
                         .build());
         }
+    }
+
+    static ProductResponseDto getExampleProductResponseDto() {
+        return productResponseDtos.get(1);
     }
 
     static List<ProductResponseDto> getExampleListOfProductResponseDto() {
@@ -47,6 +51,20 @@ public class ProductServiceTestHelper {
                 .quantity(new BigDecimal(100.1))
                 .description("Description of new product")
                 .build();
+    }
+
+    static Product createExampleProduct(long id) {
+        Product product = new Product();
+        product.setId(id);
+        product.setName("Product name");
+        product.setSKU("Product SKU");
+        product.setQuantity(new BigDecimal(0));
+        product.setCreatedBy(1L);
+        product.setCreatedAt(currentTimestamp);
+        product.setUpdatedBy(1L);
+        product.setCreatedAt(currentTimestamp);
+        product.setVersion(1L);
+        return product;
     }
 
     static LocalDateTime getCurrentTimestamp() {

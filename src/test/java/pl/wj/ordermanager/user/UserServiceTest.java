@@ -291,11 +291,11 @@ class UserServiceTest {
                 .willReturn(new PageImpl<>(new ArrayList<>()));
 
         // when
-        Page<UserResponseDto> responseUsers =
+        Page<UserResponseDto> userResponseDtos =
                 userService.getUsers(null, PageRequest.of(pageNumber, pageSize));
 
         // then
-        assertThat(responseUsers)
+        assertThat(userResponseDtos)
                 .isNotNull()
                 .hasSize(expectedSize);
     }
@@ -318,11 +318,11 @@ class UserServiceTest {
                 .willReturn(new PageImpl<>(onePageOfArchivedUsers));
 
         // when
-        Page<UserResponseDto> responseArchivedUsers =
+        Page<UserResponseDto> userResponseDtos =
                 userService.getUsers(archived, PageRequest.of(pageNumber, pageSize));
 
         // then
-        assertThat(responseArchivedUsers)
+        assertThat(userResponseDtos)
                 .isNotNull()
                 .hasSize(pageSize)
                 .usingRecursiveFieldByFieldElementComparator()
@@ -350,11 +350,11 @@ class UserServiceTest {
                 .willReturn(new PageImpl<>(lastPageOfArchivedUsers));
 
         // when
-        Page<UserResponseDto> responseUsers =
+        Page<UserResponseDto> userResponseDtos =
                 userService.getUsers(null, PageRequest.of(pageNumber, pageSize));
 
         // then
-        assertThat(responseUsers)
+        assertThat(userResponseDtos)
                 .isNotNull()
                 .hasSize(expectedSize)
                 .usingRecursiveFieldByFieldElementComparator()
@@ -379,11 +379,11 @@ class UserServiceTest {
                 .willReturn(new PageImpl<>(onePageOfArchivedUsers));
 
         // when
-        Page<UserResponseDto> responseArchivedUsers =
+        Page<UserResponseDto> userResponseDtos =
                 userService.getUsers(archived, PageRequest.of(pageNumber, pageSize));
 
         // then
-        assertThat(responseArchivedUsers)
+        assertThat(userResponseDtos)
                 .isNotNull()
                 .hasSize(pageSize)
                 .usingRecursiveFieldByFieldElementComparator()
@@ -411,11 +411,11 @@ class UserServiceTest {
                 .willReturn(new PageImpl<>(lastPageOfNotArchivedUsers));
 
         // when
-        Page<UserResponseDto> responseUsers =
+        Page<UserResponseDto> userResponseDtos =
                 userService.getUsers(null, PageRequest.of(pageNumber, pageSize));
 
         // then
-        assertThat(responseUsers)
+        assertThat(userResponseDtos)
                 .isNotNull()
                 .hasSize(expectedSize)
                 .usingRecursiveFieldByFieldElementComparator()
@@ -434,11 +434,11 @@ class UserServiceTest {
                 .willReturn(new PageImpl<>(new ArrayList<>()));
 
         // when
-        Page<UserResponseDto> responseUsers =
+        Page<UserResponseDto> userResponseDtos =
                 userService.getUsers(archived, PageRequest.of(pageNumber, pageSize));
 
         // then
-        assertThat(responseUsers)
+        assertThat(userResponseDtos)
                 .isNotNull()
                 .hasSize(expectedSize);
     }

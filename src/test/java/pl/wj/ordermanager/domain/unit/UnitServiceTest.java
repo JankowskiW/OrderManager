@@ -36,10 +36,10 @@ class UnitServiceTest {
         given(unitRepository.findAll()).willReturn(getExampleListOfUnits());
 
         // when
-        List<Unit> response = unitService.getUnits();
+        List<Unit> units = unitService.getUnits();
 
         // then
-        assertThat(response)
+        assertThat(units)
                 .isNotNull()
                 .hasSize(getExampleListOfUnits().size())
                 .usingRecursiveFieldByFieldElementComparator()
@@ -53,10 +53,10 @@ class UnitServiceTest {
         given(unitRepository.findAll()).willReturn(new ArrayList<>());
 
         // when
-        List<Unit> response = unitService.getUnits();
+        List<Unit> units = unitService.getUnits();
 
         // then
-        assertThat(response)
+        assertThat(units)
                 .isNotNull()
                 .hasSize(0);
     }
@@ -78,10 +78,10 @@ class UnitServiceTest {
                         });
 
         // when
-        Unit response = unitService.addUnit(unitRequestDto);
+        Unit unit = unitService.addUnit(unitRequestDto);
 
         // then
-        assertThat(response)
+        assertThat(unit)
                 .isNotNull()
                 .usingRecursiveComparison()
                 .isEqualTo(expectedResponse);
