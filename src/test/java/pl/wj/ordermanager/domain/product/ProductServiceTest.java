@@ -5,7 +5,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -19,9 +18,8 @@ import pl.wj.ordermanager.domain.product.model.dto.ProductQtyDto;
 import pl.wj.ordermanager.domain.product.model.dto.ProductRequestDto;
 import pl.wj.ordermanager.domain.product.model.dto.ProductResponseDto;
 import pl.wj.ordermanager.exception.ResourceExistsException;
+import pl.wj.ordermanager.exception.ResourceNotFoundException;
 import pl.wj.ordermanager.user.UserRepository;
-import pl.wj.ordermanager.user.UserService;
-import pl.wj.ordermanager.user.model.UserMapper;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -30,11 +28,11 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static pl.wj.ordermanager.domain.product.ProductServiceTestHelper.*;
 import static pl.wj.ordermanager.exception.ExceptionHelper.createResourceExistsExceptionMessage;
+import static pl.wj.ordermanager.exception.ExceptionHelper.createResourceNotFoundExceptionMessage;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -151,6 +149,71 @@ class ProductServiceTest {
     }
 
     @Test
+    @DisplayName("Should edit product")
+    void shouldEditProduct() {
+        // given
+        long id = 1L;
+        long loggedInUserId = 1L;
+        ProductRequestDto productRequestDto = createExampleProductRequestDto();
+        productRequestDto.setDescription("New Description");
+        ProductResponseDto expectedResponse = createExampleProductResponseDto(id, productRequestDto);
+        expectedResponse.setQuantity(new BigDecimal(100));
+        Product product = createExampleProduct(expectedResponse);
+        product.setId(id);
+        given(productRepository.findById(anyLong())).willReturn(Optional.of(product));
+        given(productRepository.existsByNameOrSKU(anyString(), anyString())).willReturn(false);
+        given(userRepository.getLoggedInUserId()).willReturn(Optional.of(loggedInUserId));
+        given(productRepository.save(any(Product.class))).willAnswer(
+                i -> {
+                    Product p = i.getArgument(0, Product.class);
+                    p.setId(id);
+                    p.setUpdatedAt(getCurrentTimestamp().plusDays(10));
+                    p.setVersion(product.getVersion() + 1);
+                    return p;
+                });
+
+        // when
+        ProductResponseDto productResponseDto = productService.editProduct(id, productRequestDto);
+
+        // then
+        assertThat(productResponseDto)
+                .isNotNull()
+                .usingRecursiveComparison()
+                .isEqualTo(expectedResponse);
+    }
+
+    @Test
+    @DisplayName("Should throw ResourceNotFoundException when edited product does not exist in database by id")
+    void shouldThrowExceptionWhenEditedProductDoesNotExistInDatabaseById() {
+        // given
+        long id = 1L;
+        ProductRequestDto productRequestDto = createExampleProductRequestDto();
+        given(productRepository.findById(anyLong())).willReturn(Optional.empty());
+
+        // when
+        assertThatThrownBy(() -> productService.editProduct(id, productRequestDto))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage(createResourceNotFoundExceptionMessage("product"));
+    }
+
+    @Test
+    @DisplayName("Should throw ResourceExistsException when edited product exists by name or sku")
+    void shouldThrowExceptionWhenEditedProductExistsByNameOrSKU() {
+        // given
+        long id = 1L;
+        ProductRequestDto productRequestDto = createExampleProductRequestDto();
+        ProductResponseDto expectedResponse = createExampleProductResponseDto(id, productRequestDto);
+        Product product = createExampleProduct(expectedResponse);
+        given(productRepository.findById(anyLong())).willReturn(Optional.of(product));
+        given(productRepository.existsByNameOrSKU(anyString(), anyString())).willReturn(true);
+
+        // when
+        assertThatThrownBy(() -> productService.editProduct(id, productRequestDto))
+                .isInstanceOf(ResourceExistsException.class)
+                .hasMessage(createResourceExistsExceptionMessage("product", "name or sku"));
+    }
+
+    @Test
     @DisplayName("Should update product quantity")
     void shouldUpdateProductQuantity() {
         // given
@@ -158,8 +221,8 @@ class ProductServiceTest {
         long loggedInUserId = 1L;
         ProductQtyDto productQtyDto = new ProductQtyDto(new BigDecimal(100));
         ProductResponseDto expectedResponse = getExampleProductResponseDto();
-        expectedResponse.setQuantity(productQtyDto.getQuantity());
         Product product = createExampleProduct(expectedResponse);
+        expectedResponse.setQuantity(productQtyDto.getQuantity());
         given(productRepository.findById(id)).willReturn(Optional.of(product));
         given(userRepository.getLoggedInUserId()).willReturn(Optional.of(loggedInUserId));
         given(productRepository.save(any(Product.class))).willAnswer(
@@ -179,5 +242,6 @@ class ProductServiceTest {
                 .usingRecursiveComparison()
                 .isEqualTo(expectedResponse);
     }
+
 
 }

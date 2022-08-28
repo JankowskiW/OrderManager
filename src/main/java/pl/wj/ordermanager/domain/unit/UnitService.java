@@ -3,8 +3,8 @@ package pl.wj.ordermanager.domain.unit;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Service;
-import pl.wj.ordermanager.domain.unit.model.Unit;
 import pl.wj.ordermanager.domain.unit.model.UnitMapper;
+import pl.wj.ordermanager.domain.unit.model.Unit;
 import pl.wj.ordermanager.domain.unit.model.dto.UnitRequestDto;
 import pl.wj.ordermanager.exception.ResourceExistsException;
 

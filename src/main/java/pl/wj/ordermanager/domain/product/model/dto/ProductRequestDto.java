@@ -15,6 +15,5 @@ public class ProductRequestDto {
     private String name;
     private String SKU;
     private String EAN;
-    private BigDecimal quantity;
     private String description;
 }

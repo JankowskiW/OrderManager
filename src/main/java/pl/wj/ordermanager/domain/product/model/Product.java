@@ -2,7 +2,6 @@ package pl.wj.ordermanager.domain.product.model;
 
 import lombok.*;
 import pl.wj.ordermanager.domain.unit.model.Unit;
-import pl.wj.ordermanager.role.model.Role;
 
 import javax.persistence.*;
 import java.math.BigDecimal;

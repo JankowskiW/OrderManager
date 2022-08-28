@@ -41,6 +41,7 @@ public class ProductServiceTestHelper {
     static ProductResponseDto createExampleProductResponseDto(long id, ProductRequestDto productRequestDto) {
         ProductResponseDto productResponseDto = productMapper.productRequestDtoToProductResponseDto(productRequestDto);
         productResponseDto.setId(id);
+        productResponseDto.setQuantity(new BigDecimal(0));
         return productResponseDto;
     }
 
@@ -48,7 +49,6 @@ public class ProductServiceTestHelper {
         return ProductRequestDto.builder()
                 .name("New product name")
                 .SKU("NPN")
-                .quantity(new BigDecimal(100.1))
                 .description("Description of new product")
                 .build();
     }

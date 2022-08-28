@@ -16,5 +16,5 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             "FROM Product p")
     Page<ProductResponseDto> getProducts(Pageable pageable);
 
-    boolean existsByNameOrSKU(String anyString, String anyString1);
+    boolean existsByNameOrSKU(String name, String sku);
 }
