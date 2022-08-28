@@ -27,6 +27,12 @@ public class ProductController {
         return productService.addProduct(productRequestDto);
     }
 
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'PRODUCT_WRITE')")
+    public ProductResponseDto editProduct(@PathVariable long id, @RequestBody ProductRequestDto productRequestDto) {
+        return productService.editProduct(id, productRequestDto);
+    }
+
     @PatchMapping("/{id}/quantity")
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'PRODUCT_WRITE')")
     public ProductResponseDto updateProductQuantity(@PathVariable long id, @RequestBody ProductQtyDto productQtyDto) {

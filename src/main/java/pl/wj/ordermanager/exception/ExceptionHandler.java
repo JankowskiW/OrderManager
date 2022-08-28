@@ -27,4 +27,14 @@ public class ExceptionHandler {
                 ZonedDateTime.now()
         );
     }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(ResourceInvalidVersionException.class)
+    @ResponseStatus(value = HttpStatus.CONFLICT)
+    public ExceptionBody handleResourceInvalidVersionException(ResourceInvalidVersionException e) {
+        return new ExceptionBody(
+                e.getMessage(),
+                HttpStatus.CONFLICT,
+                ZonedDateTime.now()
+        );
+    }
 }

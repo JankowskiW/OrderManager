@@ -67,6 +67,10 @@ public class ProductServiceTestHelper {
         return product;
     }
 
+    static Product createExampleProduct(ProductResponseDto productResponseDto) {
+        return productMapper.productResponseDtoToProduct(productResponseDto);
+    }
+
     static LocalDateTime getCurrentTimestamp() {
         return currentTimestamp;
     }

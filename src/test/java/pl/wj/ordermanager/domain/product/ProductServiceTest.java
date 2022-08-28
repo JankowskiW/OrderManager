@@ -155,11 +155,13 @@ class ProductServiceTest {
     void shouldUpdateProductQuantity() {
         // given
         long id = 1L;
+        long loggedInUserId = 1L;
         ProductQtyDto productQtyDto = new ProductQtyDto(new BigDecimal(100));
         ProductResponseDto expectedResponse = getExampleProductResponseDto();
         expectedResponse.setQuantity(productQtyDto.getQuantity());
-        Product product = createExampleProduct(id);
+        Product product = createExampleProduct(expectedResponse);
         given(productRepository.findById(id)).willReturn(Optional.of(product));
+        given(userRepository.getLoggedInUserId()).willReturn(Optional.of(loggedInUserId));
         given(productRepository.save(any(Product.class))).willAnswer(
                 i -> {
                     Product p = i.getArgument(0, Product.class);
