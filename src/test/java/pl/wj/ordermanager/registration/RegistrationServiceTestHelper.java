@@ -2,11 +2,11 @@ package pl.wj.ordermanager.registration;
 
 import org.mapstruct.factory.Mappers;
 import pl.wj.ordermanager.confirmationtoken.ConfirmationTokenServiceTestHelper;
-import pl.wj.ordermanager.confirmationtoken.model.ConfirmationToken;
-import pl.wj.ordermanager.user.model.User;
-import pl.wj.ordermanager.user.model.UserMapper;
-import pl.wj.ordermanager.user.model.dto.UserRequestDto;
-import pl.wj.ordermanager.user.model.dto.UserResponseDto;
+import pl.wj.ordermanager.domain.confirmationtoken.model.ConfirmationToken;
+import pl.wj.ordermanager.domain.user.model.User;
+import pl.wj.ordermanager.domain.user.model.UserMapper;
+import pl.wj.ordermanager.domain.user.model.dto.UserRequestDto;
+import pl.wj.ordermanager.domain.user.model.dto.UserResponseDto;
 
 import java.time.LocalDateTime;
 

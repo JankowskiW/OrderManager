@@ -6,7 +6,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import pl.wj.ordermanager.confirmationtoken.model.ConfirmationToken;
+import pl.wj.ordermanager.domain.confirmationtoken.ConfirmationTokenRepository;
+import pl.wj.ordermanager.domain.confirmationtoken.ConfirmationTokenService;
+import pl.wj.ordermanager.domain.confirmationtoken.model.ConfirmationToken;
 
 import java.time.LocalDateTime;
 import java.util.Optional;

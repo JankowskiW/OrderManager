@@ -1,4 +1,4 @@
-package pl.wj.ordermanager.user;
+package pl.wj.ordermanager.domain.user;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -9,17 +9,17 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.wj.ordermanager.confirmationtoken.ConfirmationTokenService;
-import pl.wj.ordermanager.confirmationtoken.model.ConfirmationToken;
+import pl.wj.ordermanager.domain.confirmationtoken.ConfirmationTokenService;
+import pl.wj.ordermanager.domain.confirmationtoken.model.ConfirmationToken;
 import pl.wj.ordermanager.email.EmailSender;
 import pl.wj.ordermanager.exception.ResourceExistsException;
 import pl.wj.ordermanager.exception.ResourceNotFoundException;
-import pl.wj.ordermanager.user.model.User;
-import pl.wj.ordermanager.user.model.UserMapper;
-import pl.wj.ordermanager.user.model.dto.UserPasswordDto;
-import pl.wj.ordermanager.user.model.dto.UserRequestDto;
-import pl.wj.ordermanager.user.model.dto.UserResponseDto;
-import pl.wj.ordermanager.user.model.dto.UserUpdateRequestDto;
+import pl.wj.ordermanager.domain.user.model.User;
+import pl.wj.ordermanager.domain.user.model.UserMapper;
+import pl.wj.ordermanager.domain.user.model.dto.UserPasswordDto;
+import pl.wj.ordermanager.domain.user.model.dto.UserRequestDto;
+import pl.wj.ordermanager.domain.user.model.dto.UserResponseDto;
+import pl.wj.ordermanager.domain.user.model.dto.UserUpdateRequestDto;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

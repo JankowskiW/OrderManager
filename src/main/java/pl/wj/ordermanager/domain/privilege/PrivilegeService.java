@@ -1,4 +1,4 @@
-package pl.wj.ordermanager.privilege;
+package pl.wj.ordermanager.domain.privilege;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

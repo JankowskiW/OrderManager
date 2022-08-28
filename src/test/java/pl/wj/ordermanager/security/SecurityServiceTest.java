@@ -7,8 +7,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import pl.wj.ordermanager.user.UserService;
-import pl.wj.ordermanager.user.model.User;
+import pl.wj.ordermanager.domain.user.UserService;
+import pl.wj.ordermanager.domain.user.model.User;
 import pl.wj.ordermanager.util.JwtUtil;
 
 import static org.assertj.core.api.Assertions.assertThat;

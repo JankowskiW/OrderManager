@@ -1,4 +1,4 @@
-package pl.wj.ordermanager.user.model;
+package pl.wj.ordermanager.domain.user.model;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -6,7 +6,7 @@ import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import pl.wj.ordermanager.role.model.Role;
+import pl.wj.ordermanager.domain.role.model.Role;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;

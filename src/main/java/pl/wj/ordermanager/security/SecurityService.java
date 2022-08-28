@@ -3,9 +3,9 @@ package pl.wj.ordermanager.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import pl.wj.ordermanager.role.model.Role;
-import pl.wj.ordermanager.user.UserService;
-import pl.wj.ordermanager.user.model.User;
+import pl.wj.ordermanager.domain.role.model.Role;
+import pl.wj.ordermanager.domain.user.UserService;
+import pl.wj.ordermanager.domain.user.model.User;
 import pl.wj.ordermanager.util.JwtUtil;
 
 import java.util.stream.Collectors;

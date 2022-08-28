@@ -1,4 +1,4 @@
-package pl.wj.ordermanager.user.model.dto;
+package pl.wj.ordermanager.domain.user.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

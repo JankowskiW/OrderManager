@@ -1,7 +1,7 @@
 package pl.wj.ordermanager.security;
 
 import pl.wj.ordermanager.user.UserServiceTestHelper;
-import pl.wj.ordermanager.user.model.User;
+import pl.wj.ordermanager.domain.user.model.User;
 import pl.wj.ordermanager.util.JwtUtil;
 
 import java.util.ArrayList;

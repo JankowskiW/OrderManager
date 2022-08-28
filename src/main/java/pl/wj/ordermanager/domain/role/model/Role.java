@@ -1,9 +1,9 @@
-package pl.wj.ordermanager.role.model;
+package pl.wj.ordermanager.domain.role.model;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import pl.wj.ordermanager.privilege.model.Privilege;
+import pl.wj.ordermanager.domain.privilege.model.Privilege;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;

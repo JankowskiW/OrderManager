@@ -13,7 +13,7 @@ import pl.wj.ordermanager.domain.product.model.dto.ProductRequestDto;
 import pl.wj.ordermanager.domain.product.model.dto.ProductResponseDto;
 import pl.wj.ordermanager.exception.ResourceExistsException;
 import pl.wj.ordermanager.exception.ResourceNotFoundException;
-import pl.wj.ordermanager.user.UserRepository;
+import pl.wj.ordermanager.domain.user.UserRepository;
 
 import java.math.BigDecimal;
 

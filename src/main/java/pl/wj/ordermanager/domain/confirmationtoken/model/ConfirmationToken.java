@@ -1,7 +1,7 @@
-package pl.wj.ordermanager.confirmationtoken.model;
+package pl.wj.ordermanager.domain.confirmationtoken.model;
 
 import lombok.*;
-import pl.wj.ordermanager.user.model.User;
+import pl.wj.ordermanager.domain.user.model.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;

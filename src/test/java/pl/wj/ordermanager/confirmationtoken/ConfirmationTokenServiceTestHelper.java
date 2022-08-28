@@ -1,6 +1,6 @@
 package pl.wj.ordermanager.confirmationtoken;
 
-import pl.wj.ordermanager.confirmationtoken.model.ConfirmationToken;
+import pl.wj.ordermanager.domain.confirmationtoken.model.ConfirmationToken;
 import pl.wj.ordermanager.user.UserServiceTestHelper;
 
 import java.time.LocalDateTime;

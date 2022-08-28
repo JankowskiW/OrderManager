@@ -1,13 +1,13 @@
-package pl.wj.ordermanager.user;
+package pl.wj.ordermanager.domain.user;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import pl.wj.ordermanager.user.model.dto.UserPasswordDto;
-import pl.wj.ordermanager.user.model.dto.UserResponseDto;
-import pl.wj.ordermanager.user.model.dto.UserUpdateRequestDto;
+import pl.wj.ordermanager.domain.user.model.dto.UserPasswordDto;
+import pl.wj.ordermanager.domain.user.model.dto.UserResponseDto;
+import pl.wj.ordermanager.domain.user.model.dto.UserUpdateRequestDto;
 
 import javax.validation.Valid;
 

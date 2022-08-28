@@ -1,8 +1,8 @@
-package pl.wj.ordermanager.confirmationtoken;
+package pl.wj.ordermanager.domain.confirmationtoken;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import pl.wj.ordermanager.confirmationtoken.model.ConfirmationToken;
+import pl.wj.ordermanager.domain.confirmationtoken.model.ConfirmationToken;
 
 @Service
 @AllArgsConstructor

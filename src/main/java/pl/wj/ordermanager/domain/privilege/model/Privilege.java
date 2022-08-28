@@ -1,4 +1,4 @@
-package pl.wj.ordermanager.privilege.model;
+package pl.wj.ordermanager.domain.privilege.model;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

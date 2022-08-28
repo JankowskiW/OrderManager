@@ -1,11 +1,11 @@
-package pl.wj.ordermanager.user.model;
+package pl.wj.ordermanager.domain.user.model;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import pl.wj.ordermanager.user.model.dto.UserRequestDto;
-import pl.wj.ordermanager.user.model.dto.UserResponseDto;
-import pl.wj.ordermanager.user.model.dto.UserUpdateRequestDto;
+import pl.wj.ordermanager.domain.user.model.dto.UserRequestDto;
+import pl.wj.ordermanager.domain.user.model.dto.UserResponseDto;
+import pl.wj.ordermanager.domain.user.model.dto.UserUpdateRequestDto;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
