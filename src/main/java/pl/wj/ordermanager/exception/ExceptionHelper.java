@@ -1,7 +1,5 @@
 package pl.wj.ordermanager.exception;
 
-import java.util.Locale;
-
 public class ExceptionHelper {
     public static String createResourceNotFoundExceptionMessage(String resource) {
         if (resource == null || resource.isBlank()) return "Resource not found";

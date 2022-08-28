@@ -3,7 +3,6 @@ package pl.wj.ordermanager.user.model;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.Mappings;
 import pl.wj.ordermanager.user.model.dto.UserRequestDto;
 import pl.wj.ordermanager.user.model.dto.UserResponseDto;
 import pl.wj.ordermanager.user.model.dto.UserUpdateRequestDto;

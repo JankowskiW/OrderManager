@@ -4,8 +4,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import pl.wj.ordermanager.domain.product.model.dto.ProductQtyDto;
-import pl.wj.ordermanager.domain.product.model.dto.ProductResponseDto;
 import pl.wj.ordermanager.domain.product.model.dto.ProductRequestDto;
+import pl.wj.ordermanager.domain.product.model.dto.ProductResponseDto;
 
 import java.math.BigDecimal;
 
