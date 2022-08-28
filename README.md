@@ -41,6 +41,7 @@ This app is inspired by:
 * [Spring Boot Reference Documentation](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/)
 * [Hibernate ORM Documentation](https://hibernate.org/orm/documentation/6.1/)
 * [AssertJ Documentation](https://assertj.github.io/doc/)
+* [MapStruct Documentation](https://mapstruct.org/documentation/dev/reference/html/)
 * [Spring Boot, Spring, Hibernate and Spring Security tutorial by Mateusz Dąbrowski](https://www.youtube.com/playlist?list=PLLIGVl2WVN6ugud2cc3OShwWoTt65jzSL)
 * [Articles on NullPointerException blog](https://nullpointerexception.pl/)
 * [Hibernate and JPA course from NullPointerException blog](https://kursy.nullpointerexception.pl/kurs-hibernate-i-jpa/)

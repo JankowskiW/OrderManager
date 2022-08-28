@@ -32,45 +32,26 @@ public class ProductService {
         if (productRepository.existsByNameOrSKU(productRequestDto.getName(), productRequestDto.getSKU())) {
             throw new ResourceExistsException("product", "name or SKU");
         }
-        Product product = mapProductRequestDtoWithAuditFieldsToCreatedProduct(productRequestDto, getLoggedInUserId());
-        product.setQuantity(new BigDecimal(0));
+        Product product = productMapper.productRequestDtoToProductWithAuditFieldsAndQty(productRequestDto, getLoggedInUserId(), new BigDecimal(0));
         return productMapper.productToProductResponseDto(productRepository.save(product));
     }
 
-    private Product mapProductRequestDtoWithAuditFieldsToCreatedProduct(ProductRequestDto productRequestDto, long loggedInUser) {
-        // TODO: 28.08.2022 Put that method somehow to ProductMapper in proper way
-        Product product = productMapper.productRequestDtoToProduct(productRequestDto);
-        product.setCreatedBy(loggedInUser);
-        product.setUpdatedBy(loggedInUser);
-        return product;
-    }
 
     public ProductResponseDto editProduct(long id, ProductRequestDto productRequestDto) {
         Product product = productRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("product"));
-        if (productRepository.existsByNameOrSKU(product.getName(), product.getSKU())) {
+        if (productRepository.existsByNameOrSKU(productRequestDto.getName(), productRequestDto.getSKU())) {
             throw new ResourceExistsException("product", "name or sku");
         }
-        product = mapEditProductRequestDtoToProduct(product, productRequestDto, getLoggedInUserId());
+        product = productMapper.productRequestDtoToProductWithAuditFields(product, productRequestDto, getLoggedInUserId());
         product = productRepository.save(product);
         return productMapper.productToProductResponseDto(product);
-    }
-
-    private Product mapEditProductRequestDtoToProduct(Product product, ProductRequestDto productRequestDto, long loggedInUser) {
-        // TODO: 28.08.2022 Put that method somehow to ProductMapper in proper way
-        product.setUpdatedBy(loggedInUser);
-        product.setName(productRequestDto.getName());
-        product.setSKU(productRequestDto.getSKU());
-        product.setEAN(productRequestDto.getEAN());
-        product.setDescription(productRequestDto.getDescription());
-        return product;
     }
 
     @Transactional
     public ProductResponseDto updateProductQuantity(long id, ProductQtyDto productQtyDto)  {
         // TODO: 28.08.2022 Catch somehow OptimisticLockException
         Product product = productRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("product"));
-        product.setQuantity(productQtyDto.getQuantity());
-        product.setUpdatedBy(getLoggedInUserId());
+        product = productMapper.productQuantityDtoToProductWithAutodFields(product, productQtyDto, getLoggedInUserId());
         product = productRepository.save(product);
         return productMapper.productToProductResponseDto(product);
     }
