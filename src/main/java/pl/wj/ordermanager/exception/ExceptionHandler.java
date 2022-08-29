@@ -1,5 +1,6 @@
 package pl.wj.ordermanager.exception;
 
+import org.hibernate.StaleObjectStateException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -31,6 +32,16 @@ public class ExceptionHandler {
     @org.springframework.web.bind.annotation.ExceptionHandler(ResourceInvalidVersionException.class)
     @ResponseStatus(value = HttpStatus.CONFLICT)
     public ExceptionBody handleResourceInvalidVersionException(ResourceInvalidVersionException e) {
+        return new ExceptionBody(
+                e.getMessage(),
+                HttpStatus.CONFLICT,
+                ZonedDateTime.now()
+        );
+    }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(StaleObjectStateException.class)
+    @ResponseStatus(value = HttpStatus.CONFLICT)
+    public ExceptionBody handleStaleObjectStateException(StaleObjectStateException  e) {
         return new ExceptionBody(
                 e.getMessage(),
                 HttpStatus.CONFLICT,

@@ -67,7 +67,6 @@ public class ProductService {
 
     @Transactional
     public ProductResponseDto updateProductQuantity(long id, ProductQtyDto productQtyDto)  {
-        // TODO: 28.08.2022 Catch somehow OptimisticLockException
         Product product = productRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("product"));
         product.setQuantity(productQtyDto.getQuantity());
         product.setUpdatedBy(getLoggedInUserId());
