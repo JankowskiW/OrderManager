@@ -49,7 +49,6 @@ public class ProductService {
 
     @Transactional
     public ProductResponseDto updateProductQuantity(long id, ProductQtyDto productQtyDto)  {
-        // TODO: 28.08.2022 Try somehow catch OptimisticLockException
         Product product = productRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("product"));
         product = productMapper.productQuantityDtoToProductWithAutodFields(product, productQtyDto, getLoggedInUserId());
         product = productRepository.save(product);
