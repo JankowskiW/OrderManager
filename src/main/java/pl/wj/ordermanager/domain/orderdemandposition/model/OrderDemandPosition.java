@@ -1,8 +1,10 @@
-package pl.wj.ordermanager.domain.orderdemandheader.model;
+package pl.wj.ordermanager.domain.orderdemandposition.model;
+
 
 import lombok.*;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
@@ -11,21 +13,19 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name="order_demand_headers")
-public class OrderDemandHeader {
+@Table(name="order_demand_positions")
+public class OrderDemandPosition {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    private String name;
-    private String description;
-    private short sourceType;
-    private boolean canceled;
-    private String cancellationReason;
-    private long canceledBy;
-    private LocalDateTime canceledAt;
-    private boolean confirmed;
-    private long confirmedBy;
-    private LocalDateTime confirmedAt;
+    private long headerId;
+    private long productId;
+    private BigDecimal orderedQuantity;
+    private LocalDateTime deadline;
+    private String remarks;
+    private boolean rejected;
+    private long rejectedBy;
+    private LocalDateTime rejectedAt;
     private boolean accepted;
     private long acceptedBy;
     private LocalDateTime acceptedAt;
